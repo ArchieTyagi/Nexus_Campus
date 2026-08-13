@@ -34,13 +34,13 @@
 }
 
 .list-row__title {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
 }
 
 .list-row__meta {
   margin-top: 2px;
-  font-size: 14px;
+  font-size: var(--text-md);
   color: var(--ink-2);
 }
 
@@ -78,18 +78,18 @@
   align-items: center;
   padding: 14px 0;
   border-bottom: 1px solid var(--hairline);
-  font-size: 15px;
+  font-size: var(--text-base);
 }
 
 .data-table__row--head {
   padding: 0 0 10px;
   border-bottom-color: var(--line);
-  font-size: 14px;
+  font-size: var(--text-md);
   color: var(--ink-2);
 }
 
 .strong {
-  font-weight: 600;
+  font-weight: var(--weight-bold);
 }
 
 .muted {
@@ -98,7 +98,7 @@
 
 .text-red {
   color: var(--red);
-  font-weight: 600;
+  font-weight: var(--weight-bold);
 }
 
 /* Horizontal bar with a 75% marker */
@@ -144,14 +144,14 @@
 .meter__value {
   flex: 0 0 44px;
   text-align: right;
-  font-weight: 600;
+  font-weight: var(--weight-bold);
 }
 
 .legend {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: var(--text-md);
   color: var(--ink-2);
 }
 
@@ -178,8 +178,8 @@
   gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
 }
 
 .pill--amber {
@@ -201,8 +201,8 @@
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--soft);
-  font-size: 12.5px;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
   text-align: center;
 }
 
@@ -218,11 +218,11 @@
   grid-template-columns: minmax(130px, 190px) minmax(0, 1fr) 52px;
   gap: 16px;
   align-items: center;
-  font-size: 15px;
+  font-size: var(--text-base);
 }
 
 .batch-chart__detail {
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--ink-2);
 }
 
@@ -254,7 +254,7 @@
 
 .batch-chart__value {
   text-align: right;
-  font-size: 16px;
+  font-size: var(--text-lg);
 }
 
 /* HOD: faculty load */
@@ -269,12 +269,12 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 6px;
-  font-size: 15px;
+  font-size: var(--text-base);
 }
 
 .load-item__note {
   margin-top: 5px;
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--ink-2);
 }
 
@@ -305,15 +305,15 @@
 .agenda__time {
   display: flex;
   flex-direction: column;
-  font-weight: 650;
-  font-size: 15px;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-base);
   line-height: 1.25;
 }
 
 .agenda__time span {
   color: var(--ink-2);
-  font-size: 12.5px;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
 }
 
 .agenda__body {
@@ -323,7 +323,7 @@
 }
 
 .agenda__title {
-  font-weight: 600;
+  font-weight: var(--weight-bold);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -331,13 +331,13 @@
 
 .agenda__meta {
   color: var(--ink-2);
-  font-size: 13.5px;
+  font-size: var(--text-sm);
 }
 
 .agenda__status {
   color: var(--ink-2);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
   text-align: right;
 }
 
@@ -387,19 +387,19 @@
 .live-class__title {
   margin: 12px 0 6px;
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 28px;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-2xl);
 }
 
 .live-class__meta {
-  font-size: 15px;
+  font-size: var(--text-base);
   color: var(--spot-muted);
 }
 
 .btn--large {
   height: 54px;
   padding: 0 26px;
-  font-size: 16px;
+  font-size: var(--text-lg);
 }
 
 .person-avatar {
@@ -412,8 +412,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
 }
 
 .align-right {
@@ -431,8 +431,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 13.5px;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
 }
 
 .field input,
@@ -442,8 +442,8 @@
   border: 1px solid var(--field-line);
   border-radius: var(--radius-sm);
   background: var(--surface);
-  font-size: 15px;
-  font-weight: 400;
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
   color: var(--ink);
 }
 
@@ -480,12 +480,12 @@
 }
 
 .register__meta {
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--ink-2);
 }
 
 .register__note {
-  font-size: 14px;
+  font-size: var(--text-md);
 }
 
 .marks {
@@ -512,7 +512,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 18px;
-  font-size: 13px;
+  font-size: var(--text-sm);
   color: var(--ink-2);
 }
 
@@ -554,15 +554,15 @@
 }
 
 .date-chip__month {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
   color: var(--amber-text);
 }
 
 .date-chip__day {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
   line-height: 1;
   color: var(--ink);
 }
