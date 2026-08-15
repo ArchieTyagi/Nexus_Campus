@@ -7,7 +7,7 @@
   padding: 0;
   list-style: none;
   color: var(--ink-2);
-  font-size: 14px;
+  font-size: var(--text-md);
 }
 
 .pw-rules li::before {
@@ -23,7 +23,7 @@
 .pw-rules li.is-ok::before {
   content: '✓';
   color: var(--amber-text);
-  font-weight: 700;
+  font-weight: var(--weight-bold);
 }
 
 .pw-rules li.is-bad {
@@ -67,7 +67,7 @@
 
 .dialog__done {
   margin-bottom: 16px;
-  font-size: 15px;
+  font-size: var(--text-base);
   line-height: 1.5;
 }
 
@@ -91,12 +91,12 @@
 
 .details dt {
   color: var(--ink-2);
-  font-size: 14px;
+  font-size: var(--text-md);
 }
 
 .details dd {
   margin: 0;
-  font-weight: 600;
+  font-weight: var(--weight-bold);
   overflow-wrap: anywhere;
 }
 
@@ -132,13 +132,13 @@
 }
 
 .segmented__label {
-  font-weight: 600;
-  font-size: 14.5px;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-md);
 }
 
 .segmented__hint {
   color: var(--ink-2);
-  font-size: 13px;
+  font-size: var(--text-sm);
 }
 
 .account-actions {
@@ -173,13 +173,13 @@
 }
 
 .course-item__name {
-  font-size: 16px;
-  font-weight: 650;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
 }
 
 .course-item__meta {
   color: var(--ink-2);
-  font-size: 14px;
+  font-size: var(--text-md);
 }
 
 .course-item__side {
@@ -192,14 +192,14 @@
 }
 
 .course-item__percent {
-  font-size: 20px;
-  font-weight: 650;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
   line-height: 1.2;
 }
 
 .course-item__note {
   color: var(--ink-2);
-  font-size: 13px;
+  font-size: var(--text-sm);
 }
 
 @media (max-width: 760px) {
