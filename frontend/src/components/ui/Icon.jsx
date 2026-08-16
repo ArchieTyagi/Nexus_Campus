@@ -29,6 +29,8 @@ const paths = {
   key: 'M14 10a4 4 0 1 0-3.5 4l1.5 1.5h2v2h2v2h3v-3l-5.1-5.1A4 4 0 0 0 14 10M15.5 8.5h.01',
   logout: 'M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10',
   expand: 'M4 4h16v16H4zM9 4v16M13 10l2 2-2 2',
+  menu: 'M4 7h16M4 12h16M4 17h16',
+  close: 'M6 6l12 12M18 6L6 18',
   moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5',
   monitor: 'M3 5h18v11H3zM8 20h8M12 16v4',
 }
