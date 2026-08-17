@@ -5,7 +5,7 @@ import { THEME_CHOICES, THEME_LABELS, getThemeChoice, onThemeChoice, saveThemeCh
 const ICONS = { system: 'monitor', light: 'sun', dark: 'moon' }
 
 // Sidebar button: each click moves Auto -> Light -> Dark -> Auto
-export default function ThemeToggle({ collapsed }) {
+export default function ThemeToggle() {
   const [choice, setChoice] = useState(getThemeChoice)
   useEffect(() => onThemeChoice(setChoice), [])
 
@@ -17,9 +17,9 @@ export default function ThemeToggle({ collapsed }) {
 
   const label = `Theme: ${THEME_LABELS[choice]}`
   return (
-    <button type="button" className="sidebar__button" onClick={next} title={collapsed ? label : 'Change theme'}>
+    <button type="button" className="sidebar__button" onClick={next} title="Change theme">
       <Icon name={ICONS[choice]} />
-      <span className="sidebar__text">{label}</span>
+      <span>{label}</span>
     </button>
   )
 }
