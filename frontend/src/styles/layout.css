@@ -1,17 +1,15 @@
-/* App shell: sidebar + main column. On small screens the sidebar sits on top. */
+/* App shell: a slim top bar with the menu button, and the page under it */
 .app-shell {
-  display: flex;
-  flex-wrap: wrap;
   min-height: 100vh;
   background: var(--canvas);
 }
 
 .main {
-  flex: 999 1 560px;
   min-width: 0;
-  padding: 28px 36px 56px;
+  padding: 24px 36px 56px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 16px;
 }
 
@@ -23,7 +21,7 @@
 
 /* Sidebar */
 .sidebar {
-  flex: 1 1 248px;
+  flex: 0 0 auto;
   background: var(--sidebar);
   border-right: 1px solid var(--sidebar-line);
   padding: 22px 14px;
@@ -32,9 +30,6 @@
   gap: 22px;
 }
 
-.sidebar.is-collapsed {
-  flex: 0 0 76px;
-}
 
 .sidebar__brand {
   display: flex;
@@ -114,15 +109,7 @@
   border-top: 1px solid var(--sidebar-line);
 }
 
-.sidebar.is-collapsed .sidebar__text,
-.sidebar.is-collapsed .sidebar__group-label {
-  display: none;
-}
 
-.sidebar.is-collapsed .sidebar__link,
-.sidebar.is-collapsed .sidebar__button {
-  justify-content: center;
-}
 
 /* Page header: the title sits on the page, the key numbers in one slim bar under it */
 .page-header {
@@ -351,46 +338,17 @@
 
 /* Phones: the sidebar becomes a scrolling menu bar and panels get tighter */
 @media (max-width: 760px) {
-  .sidebar,
-  .sidebar.is-collapsed {
-    flex: 1 1 100%;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 12px;
-    overflow-x: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--sidebar-line);
-  }
-
-  .sidebar__brand {
-    padding: 0 8px 0 0;
-  }
-
-  .sidebar__role,
-  .sidebar__group-label,
-  .sidebar__footer {
-    display: none;
-  }
-
-  .sidebar__group {
-    flex-direction: row;
-    gap: 4px;
-    padding-top: 0;
-    border-top: 0;
-  }
-
-  .sidebar__link {
-    white-space: nowrap;
-  }
-
-  .sidebar.is-collapsed .sidebar__text {
-    display: inline;
-  }
-
   .main {
-    padding: 18px 14px 36px;
+    padding: 16px 14px 36px;
     gap: 12px;
+  }
+
+  .topbar {
+    padding: 0 10px;
+  }
+
+  .topbar__role {
+    display: none;
   }
 
   .page-header__actions {
@@ -434,4 +392,129 @@
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Top bar: menu button, name, and who is logged in */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  padding: 0 20px;
+  background: var(--sidebar);
+  border-bottom: 1px solid var(--sidebar-line);
+  color: var(--sidebar-text);
+}
+
+.topbar__menu {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.topbar__menu:hover {
+  background: #202226;
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15.5px;
+  text-decoration: none;
+}
+
+.topbar__brand:hover {
+  color: #ffffff;
+}
+
+.topbar__role {
+  margin-left: auto;
+  color: var(--sidebar-muted);
+  font-size: 13.5px;
+}
+
+/* The menu: slides in from the left over the page, only while open */
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.drawer .sidebar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(290px, 86vw);
+  overflow-y: auto;
+  border-right: 1px solid var(--sidebar-line);
+  animation: drawer-in 0.18s ease-out;
+}
+
+.drawer__loading {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(290px, 86vw);
+  padding: 24px;
+  background: var(--sidebar);
+  color: var(--sidebar-muted);
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer .sidebar {
+    animation: none;
+  }
+}
+
+.sidebar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar__close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--sidebar-text);
+  cursor: pointer;
+}
+
+.sidebar__close:hover {
+  background: #202226;
+  color: #ffffff;
 }
