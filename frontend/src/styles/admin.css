@@ -1482,3 +1482,50 @@
   flex-direction: column;
   gap: 12px;
 }
+
+/* Teacher students: one small tag per course, red when below 75% */
+.course-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.course-chip {
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--ink-2);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.course-chip strong {
+  margin-left: 2px;
+  color: var(--ink);
+}
+
+.course-chip:hover {
+  border-color: var(--field-hover);
+  color: var(--ink);
+}
+
+.course-chip.is-low {
+  border-color: var(--red-tint-border);
+  background: var(--red-tint);
+  color: var(--red);
+}
+
+.course-chip.is-low strong {
+  color: var(--red);
+}
+
+/* Attendance report grid: numbers lined up on the right so they compare easily */
+.data-table--report {
+  min-width: 0;
+}
+
+.report__num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
