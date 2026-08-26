@@ -20,6 +20,7 @@ import UsersPage from './pages/admin/UsersPage.jsx'
 import CoursesPage from './pages/admin/CoursesPage.jsx'
 import TakeAttendancePage from './pages/teacher/TakeAttendancePage.jsx'
 import MyCoursesPage from './pages/teacher/MyCoursesPage.jsx'
+import TeacherStudentsPage from './pages/teacher/StudentsPage.jsx'
 import AttendancePage from './pages/student/AttendancePage.jsx'
 import OjtPage from './pages/student/OjtPage.jsx'
 import OjtAdminPage from './pages/admin/OjtAdminPage.jsx'
@@ -30,6 +31,7 @@ import InternshipsAdminPage from './pages/admin/InternshipsAdminPage.jsx'
 import BatchStudentsPage from './pages/batch/BatchStudentsPage.jsx'
 import BatchDashboardPage from './pages/batch/BatchDashboardPage.jsx'
 import TimetableAdminPage from './pages/admin/TimetableAdminPage.jsx'
+import AttendanceReportsPage from './pages/admin/AttendanceReportsPage.jsx'
 import TimetablePage from './pages/student/TimetablePage.jsx'
 import StudentCoursesPage from './pages/student/CoursesPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
@@ -46,6 +48,7 @@ const dashboards = [
       { path: 'users', element: <UsersPage /> },
       { path: 'courses', element: <CoursesPage /> },
       { path: 'timetable', element: <TimetableAdminPage /> },
+      { path: 'reports', element: <AttendanceReportsPage /> },
       { path: 'activities', element: <ImpactReviewPage /> },
       { path: 'notices', element: <NoticesAdminPage /> },
       { path: 'materials', element: <MaterialsAdminPage /> },
@@ -81,6 +84,7 @@ const dashboards = [
     allow: ['teacher'],
     pages: [
       { path: 'courses', element: <MyCoursesPage /> },
+      { path: 'students', element: <TeacherStudentsPage /> },
       { path: 'attendance', element: <TakeAttendancePage /> },
       { path: 'timetable', element: <TimetablePage /> },
       { path: 'notices', element: <NoticesPage /> },
