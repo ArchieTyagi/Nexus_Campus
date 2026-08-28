@@ -10,7 +10,7 @@ import { onlyMine, canEdit } from '../../utils/batches.js'
 const batchLabel = (b) => `${b.department?.code ?? ''} ${b.name}`.trim()
 
 export default function MaterialsAdminPage() {
-  const { token, user } = useAuth()
+  const { token, user, profile } = useAuth()
   const [batches, setBatches] = useState([])
   const [items, setItems] = useState(null)
   const [batchId, setBatchId] = useState('')
@@ -19,11 +19,11 @@ export default function MaterialsAdminPage() {
   useEffect(() => {
     Promise.all([api('/batches', { token }), api('/materials', { token })])
       .then(([allBatches, list]) => {
-        setBatches(onlyMine(allBatches, user))
+        setBatches(onlyMine(allBatches, user, profile))
         setItems(list)
       })
       .catch((err) => setError(err.message))
-  }, [token, user])
+  }, [token, user, profile])
 
   const batch = batches.find((b) => b._id === batchId) ?? batches[0]
   const forBatch = (items ?? []).filter((m) => (m.batch?._id ?? m.batch) === batch?._id)
@@ -37,7 +37,11 @@ export default function MaterialsAdminPage() {
         subtitle="Upload the file to Google Drive, set sharing to “Anyone with the link”, then paste the link here."
         stats={[
           { label: 'Files', value: items ? items.length : '...', note: 'across all batches' },
-          { label: 'This batch', value: items ? forBatch.length : '...', note: batch ? batchLabel(batch) : 'no batch yet' },
+          {
+            label: 'This batch',
+            value: items ? forBatch.length : '...',
+            note: batch ? batchLabel(batch) : 'no batch yet',
+          },
         ]}
       />
 
@@ -48,7 +52,10 @@ export default function MaterialsAdminPage() {
       )}
 
       {batches.length === 0 && items && (
-        <Panel title="Add a batch first" description="Study material belongs to a batch. Create one in Departments and batches." />
+        <Panel
+          title="Add a batch first"
+          description="Study material belongs to a batch. Create one in Departments and batches."
+        />
       )}
 
       {batch && (
@@ -182,10 +189,21 @@ function MaterialForm({ token, batch, subjects, onAdded }) {
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      {error && <p className="login__error" role="alert">{error}</p>}
+      {error && (
+        <p className="login__error" role="alert">
+          {error}
+        </p>
+      )}
       <label className="field">
         Subject
-        <input value={form.subject} onChange={set('subject')} list="subject-options" placeholder="DSA" maxLength={80} required />
+        <input
+          value={form.subject}
+          onChange={set('subject')}
+          list="subject-options"
+          placeholder="DSA"
+          maxLength={80}
+          required
+        />
         <datalist id="subject-options">
           {subjects.map((s) => (
             <option key={s} value={s} />
@@ -194,11 +212,23 @@ function MaterialForm({ token, batch, subjects, onAdded }) {
       </label>
       <label className="field">
         Title
-        <input value={form.title} onChange={set('title')} placeholder="Unit 1: Arrays and linked lists" maxLength={150} required />
+        <input
+          value={form.title}
+          onChange={set('title')}
+          placeholder="Unit 1: Arrays and linked lists"
+          maxLength={150}
+          required
+        />
       </label>
       <label className="field">
         Drive link
-        <input type="url" value={form.link} onChange={set('link')} placeholder="https://drive.google.com/..." required />
+        <input
+          type="url"
+          value={form.link}
+          onChange={set('link')}
+          placeholder="https://drive.google.com/..."
+          required
+        />
       </label>
       <label className="field">
         Note (optional)

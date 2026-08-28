@@ -6,10 +6,10 @@ import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 import AudienceFields from '../../components/forms/AudienceFields.jsx'
 import { audienceBody, audienceReady } from '../../utils/audience.js'
-import { onlyMine, isBatchManager, canEdit } from '../../utils/batches.js'
+import { onlyMine, myDepartments, isBatchManager, isHod, canEdit } from '../../utils/batches.js'
 
 export default function NoticesAdminPage() {
-  const { token, user } = useAuth()
+  const { token, user, profile } = useAuth()
   const [notices, setNotices] = useState(null)
   const [departments, setDepartments] = useState([])
   const [batches, setBatches] = useState([])
@@ -19,11 +19,11 @@ export default function NoticesAdminPage() {
     Promise.all([api('/notices', { token }), api('/departments', { token }), api('/batches', { token })])
       .then(([list, depts, allBatches]) => {
         setNotices(list)
-        setDepartments(depts)
-        setBatches(onlyMine(allBatches, user))
+        setDepartments(myDepartments(depts, user, profile))
+        setBatches(onlyMine(allBatches, user, profile))
       })
       .catch((err) => setError(err.message))
-  }, [token, user])
+  }, [token, user, profile])
 
   const sortNotices = (list) =>
     [...list].sort((a, b) => Number(b.pinned) - Number(a.pinned) || new Date(b.createdAt) - new Date(a.createdAt))
@@ -77,6 +77,7 @@ export default function NoticesAdminPage() {
               departments={departments}
               batches={batches}
               batchOnly={isBatchManager(user)}
+              departmentOnly={isHod(user)}
               onPosted={added}
             />
           </Panel>
@@ -132,12 +133,12 @@ function NoticeActions({ notice, token, onChanged, onDeleted }) {
   )
 }
 
-function NoticeForm({ token, departments, batches, batchOnly, onPosted }) {
+function NoticeForm({ token, departments, batches, batchOnly, departmentOnly, onPosted }) {
   const empty = {
     title: '',
     body: '',
     link: '',
-    audience: batchOnly ? 'batch' : 'all',
+    audience: batchOnly ? 'batch' : departmentOnly ? 'department' : 'all',
     department: '',
     batch: '',
     ojt: false,
@@ -197,7 +198,14 @@ function NoticeForm({ token, departments, batches, batchOnly, onPosted }) {
         Link (optional)
         <input type="url" value={form.link} onChange={set('link')} placeholder="https://..." />
       </label>
-      <AudienceFields form={form} set={set} departments={departments} batches={batches} batchOnly={batchOnly} />
+      <AudienceFields
+        form={form}
+        set={set}
+        departments={departments}
+        batches={batches}
+        batchOnly={batchOnly}
+        departmentOnly={departmentOnly}
+      />
       <div className="check-row">
         <label className="check">
           <input type="checkbox" checked={form.important} onChange={set('important')} />

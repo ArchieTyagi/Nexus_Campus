@@ -4,6 +4,7 @@ import Panel from '../../components/ui/Panel.jsx'
 import WeekGrid from '../../components/timetable/WeekGrid.jsx'
 import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
+import { onlyMine } from '../../utils/batches.js'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const batchLabel = (b) => `${b.department?.code ?? ''} ${b.name}`.trim()
@@ -13,7 +14,9 @@ const toMinutes = (t) => {
 }
 
 export default function TimetableAdminPage() {
-  const { token } = useAuth()
+  const { token, user, profile } = useAuth()
+  // Only admins can change the timetable. An HOD sees their department's batches, read only.
+  const canChange = user?.role === 'admin'
   const [batches, setBatches] = useState([])
   const [batchId, setBatchId] = useState('')
   const [courses, setCourses] = useState([])
@@ -23,9 +26,9 @@ export default function TimetableAdminPage() {
 
   useEffect(() => {
     api('/batches', { token })
-      .then(setBatches)
+      .then((all) => setBatches(onlyMine(all, user, profile)))
       .catch((err) => setError(err.message))
-  }, [token])
+  }, [token, user, profile])
 
   const batch = batches.find((b) => b._id === batchId) ?? batches[0]
 
@@ -61,9 +64,13 @@ export default function TimetableAdminPage() {
   return (
     <>
       <PageHeader
-        kicker="Manage"
+        kicker={canChange ? 'Manage' : 'Department'}
         title="Timetable"
-        subtitle="The weekly classes for each batch. Students and teachers see this on their home screen and timetable page."
+        subtitle={
+          canChange
+            ? 'The weekly classes for each batch. Students and teachers see this on their home screen and timetable page.'
+            : 'The weekly classes of each batch in your department. Ask the admin to change a class.'
+        }
         stats={[
           {
             label: 'Classes a week',
@@ -100,47 +107,57 @@ export default function TimetableAdminPage() {
         </p>
       )}
 
-      {batches.length === 0 && <Panel title="Add a batch first" description="Create one in Departments and batches." />}
+      {batches.length === 0 && (
+        <Panel
+          title={canChange ? 'Add a batch first' : 'No batches yet'}
+          description={canChange ? 'Create one in Departments and batches.' : 'Your department has no batches yet.'}
+        />
+      )}
 
       {batch && (
         <>
-          <Panel
-            title={
-              editing
-                ? `Change ${editing.course?.code} on ${editing.day} ${editing.startTime}`
-                : `Add a class to ${batchLabel(batch)}`
-            }
-            description={
-              courses.length === 0
-                ? 'This batch has no courses yet. Add them in Courses first.'
-                : 'The server stops clashes: the same batch, teacher or room cannot have two classes at the same time.'
-            }
-          >
-            {courses.length > 0 && (
-              <SlotForm
-                key={editing?._id ?? `new-${batch._id}`}
-                token={token}
-                courses={courses}
-                editing={editing}
-                onSaved={saved}
-                onCancel={() => setEditing(null)}
-              />
-            )}
-          </Panel>
+          {canChange && (
+            <Panel
+              title={
+                editing
+                  ? `Change ${editing.course?.code} on ${editing.day} ${editing.startTime}`
+                  : `Add a class to ${batchLabel(batch)}`
+              }
+              description={
+                courses.length === 0
+                  ? 'This batch has no courses yet. Add them in Courses first.'
+                  : 'The server stops clashes: the same batch, teacher or room cannot have two classes at the same time.'
+              }
+            >
+              {courses.length > 0 && (
+                <SlotForm
+                  key={editing?._id ?? `new-${batch._id}`}
+                  token={token}
+                  courses={courses}
+                  editing={editing}
+                  onSaved={saved}
+                  onCancel={() => setEditing(null)}
+                />
+              )}
+            </Panel>
+          )}
 
           <Panel title={`Week of ${batchLabel(batch)}`}>
             {slots && (
               <WeekGrid
                 slots={slots}
                 selectedId={editing?._id}
-                renderActions={(s) => (
-                  <>
-                    <button type="button" className="link-button" onClick={() => setEditing(s)}>
-                      Edit
-                    </button>
-                    <DeleteSlot onConfirm={() => remove(s)} />
-                  </>
-                )}
+                renderActions={
+                  canChange &&
+                  ((s) => (
+                    <>
+                      <button type="button" className="link-button" onClick={() => setEditing(s)}>
+                        Edit
+                      </button>
+                      <DeleteSlot onConfirm={() => remove(s)} />
+                    </>
+                  ))
+                }
               />
             )}
           </Panel>

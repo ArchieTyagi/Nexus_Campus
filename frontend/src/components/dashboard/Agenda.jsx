@@ -1,5 +1,5 @@
 // Today's classes as a simple list: time, subject, room, and whether it is done, on now or next.
-// "note" on a period (for example "Marked 6 of 8") replaces the status text.
+// "note" on a period (for example "Marked 6 of 8") replaces the status text, and tone: 'red' shows it in red.
 const toMinutes = (time) => {
   const [h, m] = time.split(':').map(Number)
   return h * 60 + m
@@ -26,7 +26,7 @@ export default function Agenda({ periods, now }) {
               <span className="agenda__title">{p.title}</span>
               <span className="agenda__meta">{[p.label, p.place].filter(Boolean).join(', ')}</span>
             </span>
-            <span className="agenda__status">{p.note ?? status}</span>
+            <span className={`agenda__status ${p.tone === 'red' ? 'text-red' : ''}`}>{p.note ?? status}</span>
           </li>
         )
       })}

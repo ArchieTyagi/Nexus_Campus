@@ -7,6 +7,7 @@ import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 import { isLow } from '../../utils/attendance.js'
 import { downloadCsv } from '../../utils/csv.js'
+import { myDepartments, onlyMine } from '../../utils/batches.js'
 
 const subjectColumns = { gridTemplateColumns: 'minmax(220px, 2fr) 80px minmax(170px, 1.4fr) 90px' }
 const pct = (a, h) => (h ? Math.round((a / h) * 100) : null)
@@ -31,7 +32,8 @@ function buildGrid(reports) {
 
 // Admin: attendance of a whole batch, subject by subject and student by student
 export default function AttendanceReportsPage() {
-  const { token } = useAuth()
+  const { token, user, profile } = useAuth()
+  const isHod = user?.role === 'hod'
   const [departments, setDepartments] = useState([])
   const [batches, setBatches] = useState([])
   const [department, setDepartment] = useState('')
@@ -47,7 +49,9 @@ export default function AttendanceReportsPage() {
   // Departments and batches once; start on the first batch
   useEffect(() => {
     Promise.all([api('/departments', { token }), api('/batches', { token })])
-      .then(([depts, list]) => {
+      .then(([allDepts, allBatches]) => {
+        const depts = myDepartments(allDepts, user, profile)
+        const list = onlyMine(allBatches, user, profile)
         setDepartments(depts)
         setBatches(list)
         if (list[0]) {
@@ -56,7 +60,7 @@ export default function AttendanceReportsPage() {
         }
       })
       .catch((err) => setError(err.message))
-  }, [token])
+  }, [token, user, profile])
 
   // The batch's courses, starting on its current semester
   useEffect(() => {
@@ -151,8 +155,8 @@ export default function AttendanceReportsPage() {
   return (
     <>
       <PageHeader
-        kicker="Reports"
-        title="Attendance reports"
+        kicker={isHod ? 'Department' : 'Reports'}
+        title={isHod ? (profile?.department?.name ?? 'My department') : 'Attendance reports'}
         subtitle="Pick a batch to see every subject and every student. Below 75% is shown in red."
         stats={
           reports
@@ -182,16 +186,18 @@ export default function AttendanceReportsPage() {
       )}
 
       <div className="filter-row">
-        <label className="field field--inline">
-          <span className="sr-only">Department</span>
-          <select value={department} onChange={(e) => pickDepartment(e.target.value)}>
-            {departments.map((d) => (
-              <option key={d._id} value={d._id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        {departments.length > 1 && (
+          <label className="field field--inline">
+            <span className="sr-only">Department</span>
+            <select value={department} onChange={(e) => pickDepartment(e.target.value)}>
+              {departments.map((d) => (
+                <option key={d._id} value={d._id}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className="field field--inline">
           <span className="sr-only">Batch</span>
           <select value={batchId} onChange={(e) => pickBatch(e.target.value)} disabled={deptBatches.length === 0}>

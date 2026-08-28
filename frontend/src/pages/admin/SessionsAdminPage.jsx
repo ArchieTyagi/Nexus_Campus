@@ -7,11 +7,11 @@ import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 import DeleteButton from '../../components/ui/DeleteButton.jsx'
 import { audienceBody, audienceReady } from '../../utils/audience.js'
-import { onlyMine, isBatchManager, canEdit } from '../../utils/batches.js'
+import { onlyMine, myDepartments, isBatchManager, isHod, canEdit } from '../../utils/batches.js'
 import { SESSION_KINDS } from '../../utils/opportunities.js'
 
 export default function SessionsAdminPage() {
-  const { token, user } = useAuth()
+  const { token, user, profile } = useAuth()
   const [sessions, setSessions] = useState(null)
   const [departments, setDepartments] = useState([])
   const [batches, setBatches] = useState([])
@@ -21,11 +21,11 @@ export default function SessionsAdminPage() {
     Promise.all([api('/sessions?when=upcoming', { token }), api('/departments', { token }), api('/batches', { token })])
       .then(([list, depts, allBatches]) => {
         setSessions(list)
-        setDepartments(depts)
-        setBatches(onlyMine(allBatches, user))
+        setDepartments(myDepartments(depts, user, profile))
+        setBatches(onlyMine(allBatches, user, profile))
       })
       .catch((err) => setError(err.message))
-  }, [token, user])
+  }, [token, user, profile])
 
   return (
     <>
@@ -68,6 +68,7 @@ export default function SessionsAdminPage() {
             <SessionForm
               token={token}
               batchOnly={isBatchManager(user)}
+              departmentOnly={isHod(user)}
               departments={departments}
               batches={batches}
               onAdded={(s) =>
@@ -81,7 +82,7 @@ export default function SessionsAdminPage() {
   )
 }
 
-function SessionForm({ token, departments, batches, batchOnly, onAdded }) {
+function SessionForm({ token, departments, batches, batchOnly, departmentOnly, onAdded }) {
   const empty = {
     title: '',
     kind: 'open_source',
@@ -91,7 +92,7 @@ function SessionForm({ token, departments, batches, batchOnly, onAdded }) {
     place: '',
     link: '',
     details: '',
-    audience: batchOnly ? 'batch' : 'all',
+    audience: batchOnly ? 'batch' : departmentOnly ? 'department' : 'all',
     department: '',
     batch: '',
   }
@@ -191,7 +192,14 @@ function SessionForm({ token, departments, batches, batchOnly, onAdded }) {
         Details (optional)
         <textarea value={form.details} onChange={set('details')} rows={3} maxLength={2000} />
       </label>
-      <AudienceFields form={form} set={set} departments={departments} batches={batches} batchOnly={batchOnly} />
+      <AudienceFields
+        form={form}
+        set={set}
+        departments={departments}
+        batches={batches}
+        batchOnly={batchOnly}
+        departmentOnly={departmentOnly}
+      />
       <div className="form__actions">
         <button type="submit" className="btn btn--primary" disabled={saving || !ready}>
           {saving ? 'Posting...' : 'Post session'}

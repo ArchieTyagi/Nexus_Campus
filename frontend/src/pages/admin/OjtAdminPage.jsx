@@ -11,7 +11,7 @@ const batchLabel = (b) => `${b.department?.code ?? ''} ${b.name}`.trim()
 const thisMonth = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }).slice(0, 7)
 
 export default function OjtAdminPage() {
-  const { token, user } = useAuth()
+  const { token, user, profile } = useAuth()
   const [batches, setBatches] = useState([])
   const [batchId, setBatchId] = useState('')
   const [events, setEvents] = useState(null)
@@ -22,9 +22,9 @@ export default function OjtAdminPage() {
 
   useEffect(() => {
     api('/batches', { token })
-      .then((all) => setBatches(onlyMine(all, user)))
+      .then((all) => setBatches(onlyMine(all, user, profile)))
       .catch((err) => setError(err.message))
-  }, [token, user])
+  }, [token, user, profile])
 
   const batch = batches.find((b) => b._id === batchId) ?? batches[0]
 

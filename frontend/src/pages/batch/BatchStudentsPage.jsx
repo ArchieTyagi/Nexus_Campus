@@ -4,19 +4,30 @@ import Panel from '../../components/ui/Panel.jsx'
 import Icon from '../../components/ui/Icon.jsx'
 import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
+import { onlyMine } from '../../utils/batches.js'
 
 const columns = { gridTemplateColumns: '0.9fr minmax(180px, 1.6fr) minmax(200px, 1.6fr) 1fr 0.7fr' }
 const batchLabel = (b) => `${b.department?.code ?? ''} ${b.name}`.trim()
 
 export default function BatchStudentsPage() {
-  const { token, profile } = useAuth()
-  const batches = profile?.batches ?? []
+  const { token, user, profile } = useAuth()
+  const isHod = user?.role === 'hod'
+  // HODs get their department's batches from the server, batch managers already have theirs
+  const [deptBatches, setDeptBatches] = useState([])
+  const batches = isHod ? deptBatches : (profile?.batches ?? [])
   const [batchId, setBatchId] = useState('')
   const [students, setStudents] = useState(null)
   const [search, setSearch] = useState('')
   const [error, setError] = useState('')
 
   const batch = batches.find((b) => b._id === batchId) ?? batches[0]
+
+  useEffect(() => {
+    if (!isHod) return
+    api('/batches', { token })
+      .then((all) => setDeptBatches(onlyMine(all, user, profile)))
+      .catch((err) => setError(err.message))
+  }, [token, isHod, user, profile])
 
   useEffect(() => {
     if (!batch) return
@@ -33,15 +44,17 @@ export default function BatchStudentsPage() {
   return (
     <>
       <PageHeader
-        kicker="Batch manager"
+        kicker={isHod ? 'Department' : 'Batch manager'}
         title="Students"
         subtitle={
-          batches.length
-            ? `You look after ${batches.map(batchLabel).join(', ')}.`
-            : 'No batches are assigned to you yet. Ask the admin to assign them in Users.'
+          isHod
+            ? `Students of ${profile?.department?.name ?? 'your department'}, batch by batch.`
+            : batches.length
+              ? `You look after ${batches.map(batchLabel).join(', ')}.`
+              : 'No batches are assigned to you yet. Ask the admin to assign them in Users.'
         }
         stats={[
-          { label: 'Batches', value: batches.length, note: 'you manage' },
+          { label: 'Batches', value: batches.length, note: isHod ? 'in your department' : 'you manage' },
           { label: 'Students', value: students ? students.length : '...', note: batch ? batchLabel(batch) : '' },
         ]}
       />
