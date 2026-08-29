@@ -1,105 +1,198 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import PageHeader from '../components/layout/PageHeader.jsx'
 import Panel from '../components/ui/Panel.jsx'
-import Icon from '../components/ui/Icon.jsx'
 import Avatar from '../components/ui/Avatar.jsx'
 import NotificationButton from '../components/ui/NotificationButton.jsx'
 import BatchChart from '../components/dashboard/BatchChart.jsx'
-import { greeting } from '../utils/date.js'
-import {
-  MAX_TEACHING_HOURS,
-  batchAttendance,
-  departmentStats,
-  facultyLoad,
-  hodUser,
-  studentsAtRisk,
-} from '../data/hod.js'
+import Agenda from '../components/dashboard/Agenda.jsx'
+import { useAuth } from '../context/useAuth.js'
+import { api } from '../services/api.js'
+import { isLow } from '../utils/attendance.js'
+import { greeting, todayLabel } from '../utils/date.js'
 
-const riskColumns = { gridTemplateColumns: 'minmax(170px, 1.6fr) 1fr 1fr 0.7fr 1.5fr' }
+const AT_RISK_SHOWN = 8
+const riskColumns = { gridTemplateColumns: 'minmax(170px, 1.5fr) minmax(110px, 1fr) 80px minmax(140px, 1.2fr)' }
+const STATUS = {
+  open: { note: 'Attendance open' },
+  taken: { note: 'Marked' },
+  missed: { note: 'Not marked', tone: 'red' },
+}
 
 export default function HodDashboard() {
-  const surname = hodUser.name.split(' ').pop()
-  const lowBatches = batchAttendance.filter((batch) => batch.attendance < 75).length
+  const { token } = useAuth()
+  const [data, setData] = useState(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    api('/dashboard/hod', { token })
+      .then(setData)
+      .catch((err) => setError(err.message))
+  }, [token])
+
+  if (error) {
+    return (
+      <p className="login__error" role="alert">
+        {error}
+      </p>
+    )
+  }
+  if (!data) return <div className="auth-loading">Loading your department...</div>
+
+  const { stats } = data
+  const lowBatches = data.batches.filter((b) => b.average !== null && isLow(b.average)).length
+  const periods = data.today.map((p) => ({ ...p, place: `${p.place}, ${p.teacher}`, ...(STATUS[p.attendance] ?? {}) }))
 
   return (
     <>
       <PageHeader
-        kicker={hodUser.department}
-        title={`${greeting()}, Dr. ${surname}`}
-        subtitle="Semester ends on 12 December. Attendance is up across the department this month."
-        stats={departmentStats}
+        kicker={`${todayLabel()}, ${data.me.department.name}`}
+        title={`${greeting()}, ${data.me.name.split(' ')[0]}`}
+        subtitle="Here is how your department is doing, and who needs a follow up."
+        stats={[
+          { label: 'Students', value: String(stats.students), note: `in ${stats.batches} batches` },
+          { label: 'Faculty', value: String(stats.teachers), note: `${stats.classesToday} classes today` },
+          {
+            label: 'Attendance',
+            value: stats.average === null ? '—' : `${stats.average}%`,
+            note: 'across the department',
+            tone: stats.average !== null && isLow(stats.average) ? 'red' : undefined,
+          },
+          {
+            label: 'Below 75%',
+            value: String(stats.below),
+            note: stats.below ? 'students to follow up' : 'everyone is fine',
+            tone: stats.below ? 'red' : undefined,
+          },
+        ]}
         actions={
           <>
-            <a href="#" className="btn btn--primary">
-              <Icon name="plus" size={18} strokeWidth={2.2} />
-              Post a department notice
-            </a>
-            <NotificationButton />
-            <Avatar name={hodUser.name} detail={hodUser.detail} />
+            <Link to="/hod/notices" className="btn btn--outline">
+              Post a notice
+            </Link>
+            <Link to="/hod/notices" aria-label={`Notices, ${data.unreadNotices} new`}>
+              <NotificationButton unread={data.unreadNotices} />
+            </Link>
+            <Avatar name={data.me.name} detail="HOD" />
           </>
         }
       />
 
+      {data.attention.length > 0 && (
+        <Panel title="Needs your attention">
+          {data.attention.map((item) => (
+            <div className="list-row" key={item.key}>
+              <span className={`severity severity--${item.severity}`} aria-hidden="true" />
+              <div className="list-row__body">
+                <div className="list-row__title">{item.title}</div>
+                <div className="list-row__meta">{item.detail}</div>
+              </div>
+            </div>
+          ))}
+        </Panel>
+      )}
+
       <Panel
         title="Attendance by batch"
-        description={`${lowBatches} of ${batchAttendance.length} batches are under the 75% line this semester.`}
+        description={
+          data.batches.length
+            ? `${lowBatches} of ${data.batches.length} batches are under the 75% line.`
+            : 'Your department has no batches yet.'
+        }
         action={
           <span className="legend">
             <span className="legend__dash" aria-hidden="true" />
-            College minimum, 75%
+            75% minimum
           </span>
         }
       >
-        <BatchChart batches={batchAttendance} />
+        <BatchChart
+          batches={data.batches.map((b) => ({
+            name: b.name,
+            detail: `Semester ${b.semester}, ${b.students} students${b.below ? `, ${b.below} below 75%` : ''}`,
+            attendance: b.average,
+          }))}
+        />
       </Panel>
 
       <div className="columns">
         <div className="column column--wide">
-          <Panel title="Students below 75%" action={<a href="#" className="panel__link">See all 37</a>}>
-            <div className="table-scroll">
-              <div className="data-table">
-                <div className="data-table__row data-table__row--head" style={riskColumns}>
-                  <span>Student</span>
-                  <span>Roll number</span>
-                  <span>Batch</span>
-                  <span>Overall</span>
-                  <span>Lowest subject</span>
-                </div>
-                {studentsAtRisk.map((student) => (
-                  <div className="data-table__row" style={riskColumns} key={student.roll}>
-                    <a href="#" className="strong" style={{ color: 'var(--ink)', textDecoration: 'none' }}>
-                      {student.name}
-                    </a>
-                    <span className="muted">{student.roll}</span>
-                    <span>{student.batch}</span>
-                    <span className="text-red">{student.attendance}%</span>
-                    <span>{student.lowest}</span>
+          <Panel
+            title="Students below 75%"
+            description={data.atRisk.length ? 'Lowest overall attendance first.' : 'Nobody is below 75% right now.'}
+            action={
+              <Link to="/hod/department" className="panel__link">
+                Full report
+              </Link>
+            }
+          >
+            {data.atRisk.length > 0 && (
+              <div className="table-scroll">
+                <div className="data-table">
+                  <div className="data-table__row data-table__row--head" style={riskColumns}>
+                    <span>Student</span>
+                    <span>Batch</span>
+                    <span>Overall</span>
+                    <span>Lowest subject</span>
                   </div>
-                ))}
+                  {data.atRisk.slice(0, AT_RISK_SHOWN).map((s) => (
+                    <div className="data-table__row" style={riskColumns} key={s._id}>
+                      <div>
+                        <div className="strong">{s.name}</div>
+                        <div className="register__meta">{s.rollNumber}</div>
+                      </div>
+                      <span className="register__meta">{s.batch}</span>
+                      <span className="text-red strong">{s.overall === null ? '—' : `${s.overall}%`}</span>
+                      <span>
+                        {s.lowest.code} <span className="text-red">{s.lowest.percent}%</span>
+                        {s.subjectsBelow > 1 && (
+                          <span className="register__meta">, and {s.subjectsBelow - 1} more</span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+            {data.atRisk.length > AT_RISK_SHOWN && (
+              <p className="empty-note">And {data.atRisk.length - AT_RISK_SHOWN} more in the full report.</p>
+            )}
+          </Panel>
+
+          <Panel title="Today in the department">
+            {data.today.length === 0 ? (
+              <p className="empty-note">No classes in the timetable today.</p>
+            ) : (
+              <Agenda periods={periods} now={data.now} />
+            )}
           </Panel>
         </div>
 
         <div className="column">
-          <Panel title="Faculty load this week" description={`Teaching hours against the ${MAX_TEACHING_HOURS} hour limit.`}>
-            <div className="load-list">
-              {facultyLoad.map((teacher) => {
-                const over = teacher.hours > MAX_TEACHING_HOURS
-                const width = Math.min(100, Math.round((teacher.hours / MAX_TEACHING_HOURS) * 100))
-                return (
-                  <div className="load-item" key={teacher.name}>
-                    <div className="load-item__top">
-                      <span className="strong">{teacher.name}</span>
-                      <span className={over ? 'text-red' : 'strong'}>{teacher.hours} h</span>
-                    </div>
-                    <div className="meter__track">
-                      <span className={`meter__fill ${over ? 'is-low' : 'is-amber'}`} style={{ width: `${width}%` }} />
-                    </div>
-                    <div className="load-item__note">{teacher.courses}</div>
+          <Panel
+            title="Faculty this week"
+            description="Teaching hours from the timetable."
+            action={
+              <Link to="/hod/faculty" className="panel__link">
+                All faculty
+              </Link>
+            }
+          >
+            {data.faculty.length === 0 && <p className="empty-note">No teachers in this department yet.</p>}
+            {data.faculty.map((t) => (
+              <div className="list-row" key={t._id}>
+                <div className="list-row__body">
+                  <div className="list-row__title">
+                    {t.name}
+                    {t.isHod && <span className="register__meta"> (HOD)</span>}
                   </div>
-                )
-              })}
-            </div>
+                  <div className="list-row__meta">
+                    {t.courses.length ? t.courses.map((c) => `${c.code} ${c.batch}`).join(', ') : 'No courses yet'}
+                  </div>
+                </div>
+                <div className="align-right strong">{t.hours} h</div>
+              </div>
+            ))}
           </Panel>
         </div>
       </div>

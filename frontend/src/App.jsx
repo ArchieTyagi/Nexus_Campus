@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import HodDashboard from './pages/HodDashboard.jsx'
+import FacultyPage from './pages/hod/FacultyPage.jsx'
 import TeacherDashboard from './pages/TeacherDashboard.jsx'
 import StudentDashboard from './pages/StudentDashboard.jsx'
 import DepartmentsPage from './pages/admin/DepartmentsPage.jsx'
@@ -37,7 +38,6 @@ import StudentCoursesPage from './pages/student/CoursesPage.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 
 // Which roles can open each dashboard.
-// HOD is not a backend role yet, so admin can open it for now.
 const dashboards = [
   {
     path: 'admin',
@@ -60,8 +60,15 @@ const dashboards = [
   {
     path: 'hod',
     page: <HodDashboard />,
-    allow: ['admin', 'hod'],
-    pages: [{ path: 'attendance', element: <TakeAttendancePage /> }],
+    allow: ['hod'],
+    pages: [
+      { path: 'department', element: <AttendanceReportsPage /> },
+      { path: 'faculty', element: <FacultyPage /> },
+      { path: 'students', element: <BatchStudentsPage /> },
+      { path: 'timetable', element: <TimetableAdminPage /> },
+      { path: 'attendance', element: <TakeAttendancePage /> },
+      { path: 'notices', element: <NoticesAdminPage /> },
+    ],
   },
   // Batch manager: the same review and posting pages as admin, the server limits them to their batches
   {
