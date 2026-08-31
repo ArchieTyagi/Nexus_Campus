@@ -317,112 +317,87 @@
   overflow: hidden;
 }
 
-/* Day timeline (teacher and student) */
-.timeline {
-  overflow-x: auto;
+/* Today's classes (student and teacher) */
+.agenda {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.timeline__track {
-  position: relative;
-  min-width: 760px;
-  height: 132px;
+.agenda__row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 12px;
+  border-top: 1px solid var(--hairline);
 }
 
-.timeline__rail {
-  position: absolute;
-  inset: 28px 0 auto;
-  height: 76px;
-  border-radius: 12px;
-  background: var(--soft);
+.agenda__row:first-child {
+  border-top: 0;
 }
 
-.timeline__block {
-  position: absolute;
-  top: 32px;
-  height: 68px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid transparent;
+.agenda__time {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  overflow: hidden;
+  font-weight: 650;
+  font-size: 15px;
+  line-height: 1.25;
 }
 
-.timeline__block.is-done {
-  background: var(--track);
+.agenda__time span {
   color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 500;
 }
 
-.timeline__block.is-now {
-  background: var(--amber);
-  border-color: var(--amber-border);
-  color: var(--amber-ink);
+.agenda__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.timeline__block.is-next {
-  background: var(--surface);
-  border-color: var(--field-line);
-  color: var(--ink);
-}
-
-.timeline__block.is-break {
-  background: repeating-linear-gradient(135deg, var(--soft-2) 0 6px, var(--stripe) 6px 12px);
-  border-color: var(--stripe);
-  color: var(--ink-2);
-}
-
-.timeline__small,
-.timeline__title {
-  white-space: nowrap;
+.agenda__title {
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.timeline__small {
-  font-size: 12.5px;
-}
-
-.timeline__title {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.timeline__now {
-  position: absolute;
-  top: 0;
-  height: 112px;
-  width: 2px;
-  background: var(--red);
-}
-
-.timeline__now-label {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--red);
-  color: #ffffff;
-  font-size: 12.5px;
-  font-weight: 600;
   white-space: nowrap;
 }
 
-.timeline__tick {
-  position: absolute;
-  top: 112px;
-  transform: translateX(-50%);
-  font-size: 12.5px;
+.agenda__meta {
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+.agenda__status {
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.agenda__row.is-done .agenda__time,
+.agenda__row.is-done .agenda__title {
   color: var(--ink-2);
 }
 
-.timeline__tick.is-first {
-  transform: none;
+/* The class on now gets the same amber edge as the active sidebar tab */
+.agenda__row.is-now {
+  border-radius: var(--radius-sm);
+  background: var(--amber-tint);
+  box-shadow: inset 3px 0 0 var(--amber);
 }
 
-.timeline__tick.is-last {
-  transform: translateX(-100%);
+.agenda__row.is-now + .agenda__row {
+  border-top-color: transparent;
+}
+
+.agenda__row.is-now .agenda__status {
+  color: var(--amber-tint-text);
+}
+
+.agenda__row.is-next .agenda__status {
+  color: var(--ink);
 }
 
 /* Teacher: the class happening right now */
