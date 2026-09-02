@@ -269,9 +269,15 @@ export const teacherDashboard = async (req, res) => {
     { $group: { _id: "$session", n: { $sum: 1 } } },
   ]);
   const presentIn = new Map(presentToday.map((p) => [String(p._id), p.n]));
-  const takenToday = (courseId) => {
+  // A session counts for a class period if it started between 15 minutes before the class and its end.
+  // So a second class of the same course today is not shown as already marked.
+  const EARLY_MS = 15 * 60000;
+  const clockToday = (hhmm) => new Date(indiaMidnight().getTime() + (Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5))) * 60000);
+  const takenToday = (courseId, slot) => {
+    const from = clockToday(slot.startTime).getTime() - EARLY_MS;
+    const to = clockToday(slot.endTime).getTime();
     const latest = todaySessions
-      .filter((s) => String(s.course) === String(courseId))
+      .filter((s) => String(s.course) === String(courseId) && s.startedAt.getTime() >= from && s.startedAt.getTime() < to)
       .sort((a, b) => b.startedAt - a.startedAt)[0];
     if (!latest) return null;
     const course = courses.find((c) => String(c._id) === String(courseId));
@@ -326,9 +332,9 @@ export const teacherDashboard = async (req, res) => {
       end: s.endTime,
       label: s.course?.code,
       title: s.course?.name,
-      place: [s.batch?.name, s.room].filter(Boolean).join(" · "),
+      place: [s.batch?.name, s.room].filter(Boolean).join(", "),
       course: s.course?._id,
-      taken: s.course ? takenToday(s.course._id) : null,
+      taken: s.course ? takenToday(s.course._id, s) : null,
     })),
     openSession: open ? { _id: open._id, course: open.course?.code, courseId: open.course?._id, endsAt: open.endsAt } : null,
     courses: perCourse,
