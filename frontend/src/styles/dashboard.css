@@ -168,45 +168,9 @@
 }
 
 /* Quick actions grid */
-.action-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
 
-.action-tile {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  min-height: 100px;
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  background: var(--soft);
-  color: var(--ink);
-  font-size: 15px;
-  font-weight: 600;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-}
 
-.action-tile:hover {
-  border-color: var(--field-line);
-  background: var(--soft-2);
-}
 
-.action-tile__icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--fill-strong);
-  color: var(--on-fill-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
 .pill {
   display: inline-flex;
@@ -575,11 +539,13 @@
   background: var(--amber);
 }
 
+/* Dates as small calendar pages: light, so a list of them stays calm */
 .date-chip {
-  flex: 0 0 54px;
-  height: 58px;
-  border-radius: 12px;
-  background: var(--fill-strong);
+  flex: 0 0 52px;
+  height: 56px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--soft);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -587,8 +553,9 @@
 }
 
 .date-chip__month {
-  font-size: 12.5px;
-  color: var(--on-fill-accent);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--amber-text);
 }
 
 .date-chip__day {
@@ -596,5 +563,5 @@
   font-size: 22px;
   font-weight: 600;
   line-height: 1;
-  color: var(--on-fill-strong);
+  color: var(--ink);
 }
