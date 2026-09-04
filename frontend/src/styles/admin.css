@@ -1238,7 +1238,12 @@
 }
 
 .date-chip.is-deadline {
+  border-color: var(--red-tint-border);
   background: var(--red-tint);
+}
+
+.date-chip.is-deadline .date-chip__month,
+.date-chip.is-deadline .date-chip__day {
   color: var(--red);
 }
 
