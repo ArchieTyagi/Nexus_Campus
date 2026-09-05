@@ -4,7 +4,7 @@ import PageHeader from '../components/layout/PageHeader.jsx'
 import Panel from '../components/ui/Panel.jsx'
 import Avatar from '../components/ui/Avatar.jsx'
 import NotificationButton from '../components/ui/NotificationButton.jsx'
-import DayTimeline from '../components/dashboard/DayTimeline.jsx'
+import Agenda from '../components/dashboard/Agenda.jsx'
 import AttendanceRegister from '../components/dashboard/AttendanceRegister.jsx'
 import { useAuth } from '../context/useAuth.js'
 import { api } from '../services/api.js'
@@ -107,20 +107,49 @@ export default function StudentDashboard() {
         }
       />
 
-      <Panel
-        title="Today's classes"
-        action={
-          <Link to="/student/attendance" className="panel__link">
-            Scan attendance
-          </Link>
-        }
-      >
-        {data.today.length === 0 ? (
-          <p className="empty-note">No classes in the timetable today.</p>
-        ) : (
-          <DayTimeline periods={data.today} now={data.now} />
-        )}
-      </Panel>
+      <div className="columns">
+        <div className="column column--wide">
+          <Panel
+            title="Today's classes"
+            action={
+              <Link to="/student/attendance" className="panel__link">
+                Scan attendance
+              </Link>
+            }
+          >
+            {data.today.length === 0 ? (
+              <p className="empty-note">No classes in the timetable today.</p>
+            ) : (
+              <Agenda periods={data.today} now={data.now} />
+            )}
+          </Panel>
+        </div>
+
+        <div className="column">
+          <Panel title="Coming up">
+            {data.comingUp.length === 0 && <p className="empty-note">Nothing scheduled this week.</p>}
+            {data.comingUp.map((item) => {
+              const d = shortDate(item.date)
+              return (
+                <Link
+                  to={item.link}
+                  className="list-row list-row--link"
+                  key={`${item.kind}-${item.title}-${item.date}`}
+                >
+                  <div className={`date-chip ${item.kind === 'internship' ? 'is-deadline' : ''}`}>
+                    <span className="date-chip__month">{d.month}</span>
+                    <span className="date-chip__day">{d.day}</span>
+                  </div>
+                  <div className="list-row__body">
+                    <div className="list-row__title">{item.title}</div>
+                    <div className="list-row__meta">{item.detail}</div>
+                  </div>
+                </Link>
+              )
+            })}
+          </Panel>
+        </div>
+      </div>
 
       <Panel
         title="Attendance register"
@@ -150,60 +179,31 @@ export default function StudentDashboard() {
         {held.length > 0 && <AttendanceRegister subjects={held} />}
       </Panel>
 
-      <div className="columns">
-        <div className="column column--wide">
-          <Panel
-            title="Notices"
-            action={
-              <Link to="/student/notices" className="panel__link">
-                All notices
-              </Link>
-            }
-          >
-            {data.notices.length === 0 && <p className="empty-note">No notices yet.</p>}
-            {data.notices.map((notice) => (
-              <div className="list-row" key={notice._id}>
-                <span className={`unread-dot ${notice.isNew ? 'is-unread' : ''}`} aria-hidden="true" />
-                <div className="list-row__body">
-                  <div className="list-row__title">
-                    {notice.title}
-                    {notice.important && <span className="notice__tag notice__tag--important home-tag">Important</span>}
-                  </div>
-                  <div className="list-row__meta">
-                    From {notice.postedBy ?? 'the college'},{' '}
-                    {new Date(notice.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                  </div>
-                </div>
+      <Panel
+        title="Notices"
+        action={
+          <Link to="/student/notices" className="panel__link">
+            All notices
+          </Link>
+        }
+      >
+        {data.notices.length === 0 && <p className="empty-note">No notices yet.</p>}
+        {data.notices.map((notice) => (
+          <div className="list-row" key={notice._id}>
+            <span className={`unread-dot ${notice.isNew ? 'is-unread' : ''}`} aria-hidden="true" />
+            <div className="list-row__body">
+              <div className="list-row__title">
+                {notice.title}
+                {notice.important && <span className="notice__tag notice__tag--important home-tag">Important</span>}
               </div>
-            ))}
-          </Panel>
-        </div>
-
-        <div className="column">
-          <Panel title="Coming up">
-            {data.comingUp.length === 0 && <p className="empty-note">Nothing scheduled this week.</p>}
-            {data.comingUp.map((item) => {
-              const d = shortDate(item.date)
-              return (
-                <Link
-                  to={item.link}
-                  className="list-row list-row--link"
-                  key={`${item.kind}-${item.title}-${item.date}`}
-                >
-                  <div className={`date-chip ${item.kind === 'internship' ? 'is-deadline' : ''}`}>
-                    <span className="date-chip__month">{d.month}</span>
-                    <span className="date-chip__day">{d.day}</span>
-                  </div>
-                  <div className="list-row__body">
-                    <div className="list-row__title">{item.title}</div>
-                    <div className="list-row__meta">{item.detail}</div>
-                  </div>
-                </Link>
-              )
-            })}
-          </Panel>
-        </div>
-      </div>
+              <div className="list-row__meta">
+                From {notice.postedBy ?? 'the college'},{' '}
+                {new Date(notice.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+              </div>
+            </div>
+          </div>
+        ))}
+      </Panel>
     </>
   )
 }
