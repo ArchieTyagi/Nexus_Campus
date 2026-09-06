@@ -5,7 +5,7 @@ import Panel from '../components/ui/Panel.jsx'
 import Icon from '../components/ui/Icon.jsx'
 import Avatar from '../components/ui/Avatar.jsx'
 import NotificationButton from '../components/ui/NotificationButton.jsx'
-import DayTimeline from '../components/dashboard/DayTimeline.jsx'
+import Agenda from '../components/dashboard/Agenda.jsx'
 import { useAuth } from '../context/useAuth.js'
 import { api } from '../services/api.js'
 import { isLow } from '../utils/attendance.js'
@@ -40,7 +40,7 @@ function focusCard(data) {
   if (!slot) return null
   return {
     pill: current ? `In class now, ends at ${slot.end}` : `Next class at ${slot.start}`,
-    title: `${slot.label} · ${slot.title}`,
+    title: `${slot.title}, ${slot.label}`,
     detail: `${slot.place || 'Room not set'}. ${slot.taken ? `${takenText(slot.taken)}.` : 'Attendance is not taken yet.'}`,
     // Taking it again would count as one more class held, so only offer it when it is not taken yet
     action: slot.taken ? null : { to: `/teacher/attendance?course=${slot.course}`, label: 'Mark attendance' },
@@ -90,7 +90,7 @@ export default function TeacherDashboard() {
   // On the day strip, show whether attendance was taken for each class
   const periods = data.today.map((p) => ({
     ...p,
-    place: p.taken ? `Marked ${p.taken.present}/${p.taken.total}` : p.place,
+    note: p.taken ? `Marked ${p.taken.present} of ${p.taken.total}` : undefined,
   }))
 
   return (
@@ -98,7 +98,7 @@ export default function TeacherDashboard() {
       <PageHeader
         kicker={todayLabel()}
         title={`${greeting()}, ${firstName}`}
-        subtitle={[data.me.department, data.me.employeeId].filter(Boolean).join(' · ')}
+        subtitle={[data.me.department, data.me.employeeId].filter(Boolean).join(', ')}
         stats={stats}
         actions={
           <>
@@ -129,23 +129,23 @@ export default function TeacherDashboard() {
         </section>
       )}
 
-      <Panel
-        title="Your day"
-        action={
-          <Link to="/teacher/timetable" className="panel__link">
-            Full week
-          </Link>
-        }
-      >
-        {data.today.length === 0 ? (
-          <p className="empty-note">No classes in your timetable today.</p>
-        ) : (
-          <DayTimeline periods={periods} now={data.now} />
-        )}
-      </Panel>
-
       <div className="columns">
         <div className="column column--wide">
+          <Panel
+            title="Your day"
+            action={
+              <Link to="/teacher/timetable" className="panel__link">
+                Full week
+              </Link>
+            }
+          >
+            {data.today.length === 0 ? (
+              <p className="empty-note">No classes in your timetable today.</p>
+            ) : (
+              <Agenda periods={periods} now={data.now} />
+            )}
+          </Panel>
+
           <Panel
             title="Students to watch"
             description={
@@ -160,7 +160,7 @@ export default function TeacherDashboard() {
                 <div className="list-row__body">
                   <div className="list-row__title">{s.name}</div>
                   <div className="list-row__meta">
-                    {s.rollNumber} · {s.course}, attended {s.attended} of {s.held}
+                    {s.rollNumber} in {s.course}, attended {s.attended} of {s.held}
                   </div>
                 </div>
                 <div className="align-right">
@@ -185,11 +185,9 @@ export default function TeacherDashboard() {
             {data.courses.map((c) => (
               <Link to={`/teacher/courses?course=${c._id}`} className="list-row list-row--link" key={c._id}>
                 <div className="list-row__body">
-                  <div className="list-row__title">
-                    {c.code} · {c.name}
-                  </div>
+                  <div className="list-row__title">{c.name}</div>
                   <div className="list-row__meta">
-                    {c.batch}, {c.students} students · {c.held} {c.held === 1 ? 'class' : 'classes'} held
+                    {c.code}, {c.batch}. {c.students} students, {c.held} {c.held === 1 ? 'class' : 'classes'} held
                     {c.lastClass ? `, last on ${shortDay(c.lastClass)}` : ''}
                   </div>
                 </div>
