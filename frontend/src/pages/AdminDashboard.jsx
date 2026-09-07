@@ -12,13 +12,6 @@ import { greeting, todayLabel } from '../utils/date.js'
 
 const deptColumns = { gridTemplateColumns: 'minmax(220px, 2.2fr) 0.7fr 0.8fr 0.8fr 1.8fr' }
 
-const quickActions = [
-  { label: 'Add a person', icon: 'addUser', to: '/admin/users' },
-  { label: 'Import a class from CSV', icon: 'upload', to: '/admin/users' },
-  { label: 'Create a batch', icon: 'department', to: '/admin/departments' },
-  { label: 'Build timetable', icon: 'calendar', to: '/admin/timetable' },
-]
-
 const ATTENDANCE_LABELS = {
   open: 'attendance open now',
   taken: 'attendance taken',
@@ -70,6 +63,14 @@ export default function AdminDashboard() {
         stats={campusStats}
         actions={
           <>
+            <Link to="/admin/users" className="btn btn--outline">
+              <Icon name="addUser" size={18} />
+              Add people
+            </Link>
+            <Link to="/admin/timetable" className="btn btn--outline">
+              <Icon name="calendar" size={18} />
+              Timetable
+            </Link>
             <Link to="/admin/notices" aria-label={`Notices, ${data.unreadNotices} new`}>
               <NotificationButton unread={data.unreadNotices} />
             </Link>
@@ -145,19 +146,6 @@ export default function AdminDashboard() {
         </div>
 
         <div className="column">
-          <Panel title="Quick actions">
-            <div className="action-grid">
-              {quickActions.map((action) => (
-                <Link to={action.to} className="action-tile" key={action.label}>
-                  <span className="action-tile__icon">
-                    <Icon name={action.icon} size={19} strokeWidth={1.9} />
-                  </span>
-                  {action.label}
-                </Link>
-              ))}
-            </div>
-          </Panel>
-
           <Panel
             title="Running now"
             action={
