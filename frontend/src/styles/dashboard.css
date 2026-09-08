@@ -196,11 +196,12 @@
 
 .tag {
   flex: 0 0 auto;
-  min-width: 58px;
-  padding: 5px 8px;
-  border-radius: 9px;
-  background: var(--soft-2);
-  font-size: 13px;
+  min-width: 56px;
+  padding: 3px 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--soft);
+  font-size: 12.5px;
   font-weight: 600;
   text-align: center;
 }

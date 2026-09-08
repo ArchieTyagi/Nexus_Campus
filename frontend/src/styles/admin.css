@@ -537,11 +537,12 @@
 }
 
 .field--inline select {
-  height: 40px;
+  height: 36px;
   padding: 0 10px;
   border: 1px solid var(--field-line);
-  border-radius: 10px;
-  background: var(--soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
   font-size: 14px;
 }
 
@@ -603,16 +604,26 @@
   color: var(--amber-tint-text);
 }
 
+/* Row actions stay small and quiet so the names are what you read first */
 .user-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
 }
 
 .user-actions .btn {
-  height: 34px;
-  padding: 0 10px;
+  height: 30px;
+  padding: 0 9px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--ink-2);
   font-size: 13px;
+}
+
+.user-actions .btn:hover {
+  border-color: var(--line);
+  background: var(--soft);
+  color: var(--ink);
 }
 
 .user-row__error {
@@ -1281,46 +1292,49 @@
   font-weight: 400;
 }
 
-/* Timetable */
+/* Timetable: plain day columns split by thin lines, each class marked by a left edge */
 .week {
   display: grid;
   grid-template-columns: repeat(6, minmax(150px, 1fr));
-  gap: 10px;
   overflow-x: auto;
 }
 
 .week__day {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   min-width: 150px;
-  padding: 10px;
-  border-radius: var(--radius-md);
-  background: var(--soft);
+  padding: 2px 12px 8px;
+  border-left: 1px solid var(--hairline);
 }
 
-.week__day.is-today {
-  outline: 2px solid var(--amber);
-  background: var(--amber-tint);
+.week__day:first-child {
+  padding-left: 0;
+  border-left: 0;
 }
 
 .week__name {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
   font-size: 14px;
   font-weight: 700;
 }
 
+.week__day.is-today .week__name {
+  border-bottom: 2px solid var(--amber);
+}
+
 .week__today {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--amber);
-  color: var(--amber-ink);
-  font-size: 11px;
+  color: var(--amber-text);
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
 .week__empty {
+  padding-top: 4px;
   color: var(--ink-2);
   font-size: 13px;
 }
@@ -1328,28 +1342,31 @@
 .slot {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  gap: 1px;
+  padding: 6px 0 8px 10px;
+  border-left: 3px solid var(--line);
+}
+
+.week__day.is-today .slot {
+  border-left-color: var(--amber);
 }
 
 .slot.is-selected {
-  border-color: var(--amber-border);
-  box-shadow: 0 0 0 2px var(--amber);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border-left-color: var(--amber);
+  background: var(--amber-tint);
 }
 
 .slot__time {
   color: var(--ink-2);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 600;
 }
 
 .slot__code {
+  color: var(--ink-2);
   font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.03em;
+  font-weight: 600;
 }
 
 .slot__name {
@@ -1360,7 +1377,7 @@
 
 .slot__meta {
   color: var(--ink-2);
-  font-size: 12px;
+  font-size: 12.5px;
 }
 
 .slot__actions {
