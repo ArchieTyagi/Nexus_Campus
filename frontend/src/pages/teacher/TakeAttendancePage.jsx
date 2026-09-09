@@ -87,7 +87,7 @@ export default function TakeAttendancePage() {
               <select value={courseId} onChange={(e) => setCourseId(e.target.value)}>
                 {courses.map((c) => (
                   <option key={c._id} value={c._id}>
-                    {c.code} · {c.name} · {c.batch?.name}
+                    {c.code} {c.name}, {c.batch?.name}
                   </option>
                 ))}
               </select>
@@ -194,7 +194,7 @@ function LiveSession({ sessionId, token, onDone }) {
     <>
       <PageHeader
         kicker={isOpen ? 'Attendance is open' : 'Attendance closed'}
-        title={course ? `${course.code} · ${course.name}` : 'Attendance'}
+        title={course ? `${course.name} (${course.code})` : 'Attendance'}
         subtitle={
           isOpen
             ? 'Students: open Nexus Campus, go to Attendance and tap Scan.'

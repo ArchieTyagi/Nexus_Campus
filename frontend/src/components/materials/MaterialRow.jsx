@@ -10,9 +10,9 @@ export default function MaterialRow({ item, actions = null }) {
       <div className="material__body">
         <div className="material__title">{item.title}</div>
         <div className="material__meta">
-          {item.note && `${item.note} · `}
-          {shortDate(item.createdAt)}
-          {item.postedBy?.name && ` · ${item.postedBy.name}`}
+          {item.note && `${item.note}. `}
+          Added {shortDate(item.createdAt)}
+          {item.postedBy?.name && ` by ${item.postedBy.name}`}
         </div>
       </div>
       <div className="material__actions">

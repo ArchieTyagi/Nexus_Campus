@@ -207,7 +207,7 @@ function SlotForm({ token, courses, editing, onSaved, onCancel }) {
           <select value={form.course} onChange={set('course')} disabled={Boolean(editing)}>
             {courses.map((c) => (
               <option key={c._id} value={c._id}>
-                {c.code} · {c.name}
+                {c.code} {c.name}
               </option>
             ))}
           </select>

@@ -29,7 +29,12 @@ export default function ImpactReviewPage() {
         title="Activities to review"
         subtitle="Open the proof, then approve or reject. Points only count after approval."
         stats={[
-          { label: 'Waiting', value: pending ? pending.length : '...', note: 'oldest first', tone: pending?.length ? 'amber' : undefined },
+          {
+            label: 'Waiting',
+            value: pending ? pending.length : '...',
+            note: 'oldest first',
+            tone: pending?.length ? 'amber' : undefined,
+          },
           { label: 'Reviewed now', value: done, note: 'since you opened this page' },
         ]}
       />
@@ -80,9 +85,9 @@ function ReviewRow({ activity, token, onDone }) {
       <div className="activity__main">
         <div className="activity__title">{activity.title}</div>
         <div className="activity__meta">
-          {student?.user?.name} ({student?.rollNumber}) · {CATEGORY_LABELS[activity.category]} ·{' '}
-          {STAGE_LABELS[activity.stage]}
-          {activity.date && ` · ${shortDate(activity.date)}`}
+          {student?.user?.name} ({student?.rollNumber}). {CATEGORY_LABELS[activity.category]},{' '}
+          {STAGE_LABELS[activity.stage].toLowerCase()}
+          {activity.date && `, ${shortDate(activity.date)}`}
         </div>
         {isUpgrade && <p className="activity__hint">Was registered (5 points approved). Now says selected.</p>}
       </div>
@@ -97,7 +102,12 @@ function ReviewRow({ activity, token, onDone }) {
       <div className="activity__actions">
         {!rejecting && (
           <>
-            <button type="button" className="btn btn--outline btn--quiet" onClick={() => setRejecting(true)} disabled={busy}>
+            <button
+              type="button"
+              className="btn btn--outline btn--quiet"
+              onClick={() => setRejecting(true)}
+              disabled={busy}
+            >
               Reject
             </button>
             <button type="button" className="btn btn--primary" onClick={() => decide('approved')} disabled={busy}>
@@ -117,7 +127,13 @@ function ReviewRow({ activity, token, onDone }) {
         >
           <label className="field">
             Reason (the student will see this)
-            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Link does not show your name" maxLength={300} required />
+            <input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Link does not show your name"
+              maxLength={300}
+              required
+            />
           </label>
           <div className="activity__edit-actions">
             <button type="button" className="btn btn--outline" onClick={() => setRejecting(false)}>
@@ -130,7 +146,11 @@ function ReviewRow({ activity, token, onDone }) {
         </form>
       )}
 
-      {error && <p className="login__error activity__error" role="alert">{error}</p>}
+      {error && (
+        <p className="login__error activity__error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

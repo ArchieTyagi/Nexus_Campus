@@ -15,7 +15,7 @@ export default function EventRow({ event, actions = null }) {
         <div className="event__title">{event.title}</div>
         <div className="event__meta">
           {d.toLocaleDateString('en-IN', { weekday: 'long' })}, {time}
-          {event.place && ` · ${event.place}`}
+          {event.place && `, ${event.place}`}
         </div>
         {event.details && <p className="event__details">{event.details}</p>}
       </div>

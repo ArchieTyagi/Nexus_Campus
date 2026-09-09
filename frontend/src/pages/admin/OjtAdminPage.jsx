@@ -66,7 +66,7 @@ export default function OjtAdminPage() {
           {
             label: 'Updates shown',
             value: updates ? updates.length : '...',
-            note: `${status ? UPDATE_STATUS[status].label.toLowerCase() : 'all'} · ${monthLabel(month)}`,
+            note: `${status ? UPDATE_STATUS[status].label.toLowerCase() : 'all'}, ${monthLabel(month)}`,
             tone: status === 'submitted' && updates?.length ? 'amber' : undefined,
           },
         ]}
@@ -218,7 +218,7 @@ function ReviewCard({ update, token, onReviewed }) {
             {update.student?.user?.name} <span className="review-card__roll">{update.student?.rollNumber}</span>
           </div>
           <div className="activity__meta">
-            {update.project} · {monthLabel(update.month)}
+            {update.project}, {monthLabel(update.month)}
           </div>
         </div>
         <span className={`status status--${s.chip}`}>{s.label}</span>

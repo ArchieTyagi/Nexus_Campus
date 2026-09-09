@@ -77,7 +77,7 @@ export default function BatchDashboardPage() {
   return (
     <>
       <PageHeader
-        kicker={`Batch manager · semester ${data.batch.semester}`}
+        kicker={`Batch manager, semester ${data.batch.semester}`}
         title={batchLabel(data.batch)}
         subtitle={data.batch.department?.name}
         stats={[

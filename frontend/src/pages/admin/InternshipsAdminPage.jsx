@@ -123,7 +123,7 @@ function Applicants({ internship, token }) {
         <ul className="applicant-list">
           {(people ?? []).map((p) => (
             <li key={p._id}>
-              <strong>{p.name}</strong> {p.rollNumber} · {p.batch}
+              <strong>{p.name}</strong> {p.rollNumber}, {p.batch}
             </li>
           ))}
         </ul>

@@ -27,7 +27,7 @@ export function deadlineLabel(deadline) {
   if (left < 0) return `Closed on ${date}`
   if (left === 0) return `Apply by today, ${date}`
   if (left === 1) return `Apply by tomorrow, ${date}`
-  return `Apply by ${date} · ${left} days left`
+  return `Apply by ${date}, ${left} days left`
 }
 
 export function isLive(session) {

@@ -29,7 +29,7 @@ export default function WeekGrid({ slots, show = 'teacher', selectedId, renderAc
                 <span className="slot__name">{s.course?.name}</span>
                 <span className="slot__meta">
                   {show === 'batch' ? s.batch?.name : (s.teacher?.user?.name ?? 'No teacher')}
-                  {s.room && ` · ${s.room}`}
+                  {s.room && `, ${s.room}`}
                 </span>
                 {renderActions && <span className="slot__actions">{renderActions(s)}</span>}
               </article>

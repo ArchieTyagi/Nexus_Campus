@@ -7,7 +7,13 @@ import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 
 const when = (value) =>
-  new Date(value).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
+  new Date(value).toLocaleString('en-IN', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
 
 export default function AttendancePage() {
   const { token } = useAuth()
@@ -21,7 +27,7 @@ export default function AttendancePage() {
       api('/attendance/mine', { token })
         .then(setData)
         .catch((err) => setError(err.message)),
-    [token]
+    [token],
   )
 
   useEffect(() => {
@@ -34,13 +40,13 @@ export default function AttendancePage() {
       setResult(null)
       try {
         const res = await api('/attendance/scan', { method: 'POST', token, body: { qr } })
-        setResult({ ok: true, message: `${res.message} for ${res.course.code} · ${res.course.name}` })
+        setResult({ ok: true, message: `${res.message} for ${res.course.name} (${res.course.code})` })
         load()
       } catch (err) {
         setResult({ ok: false, message: err.message })
       }
     },
-    [token, load]
+    [token, load],
   )
 
   const overall = data?.overall
@@ -110,7 +116,7 @@ export default function AttendancePage() {
                   )}
                 </div>
                 <div className={`subject-row__advice ${c.ok ? '' : 'is-low'}`}>
-                  {c.attended} of {c.held} · {c.message}
+                  {c.attended} of {c.held}. {c.message}
                 </div>
               </div>
             ))}

@@ -191,8 +191,8 @@ function profileLine(person) {
       ? `Manages ${p.batches.map((b) => `${b.department?.code ?? ''} ${b.name}`.trim()).join(', ')}`
       : 'No batches yet'
   }
-  if (person.role === 'student') return `${p.department?.code ?? ''} ${p.batch?.name ?? ''} · ${p.rollNumber}`
-  return `${p.department?.code ?? ''} · ${p.employeeId}`
+  if (person.role === 'student') return `${p.rollNumber}, ${p.department?.code ?? ''} ${p.batch?.name ?? ''}`.trim()
+  return `${p.employeeId}, ${p.department?.code ?? ''}`
 }
 
 function UserRow({ person, isMe, token, onChanged }) {

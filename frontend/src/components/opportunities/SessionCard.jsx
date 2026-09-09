@@ -14,19 +14,24 @@ export default function SessionCard({ session, actions = null }) {
       <div className="event__body">
         <span className="event__type">
           {SESSION_KINDS[session.kind]}
-          {live && <span className="live-dot"> · Live now</span>}
+          {live && <span className="live-dot">, live now</span>}
         </span>
         <div className="event__title">{session.title}</div>
         <div className="event__meta">
           {d.toLocaleDateString('en-IN', { weekday: 'long' })}, {time(d)} to {time(end)}
-          {session.speaker && ` · ${session.speaker}`}
-          {session.place && ` · ${session.place}`}
+          {session.place && `, ${session.place}`}
+          {session.speaker && `. With ${session.speaker}`}
         </div>
         {session.details && <p className="event__details">{session.details}</p>}
       </div>
       <div className="event__actions">
         {session.link && (
-          <a className={`btn ${live ? 'btn--primary' : 'btn--outline'}`} href={session.link} target="_blank" rel="noreferrer">
+          <a
+            className={`btn ${live ? 'btn--primary' : 'btn--outline'}`}
+            href={session.link}
+            target="_blank"
+            rel="noreferrer"
+          >
             {live ? 'Join now' : 'Join link'}
           </a>
         )}

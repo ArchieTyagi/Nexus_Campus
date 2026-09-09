@@ -142,10 +142,20 @@ function ActivityForm({ token, onAdded }) {
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      {error && <p className="login__error" role="alert">{error}</p>}
+      {error && (
+        <p className="login__error" role="alert">
+          {error}
+        </p>
+      )}
       <label className="field">
         What did you do?
-        <input value={form.title} onChange={set('title')} placeholder="Smart India Hackathon 2026" maxLength={120} required />
+        <input
+          value={form.title}
+          onChange={set('title')}
+          placeholder="Smart India Hackathon 2026"
+          maxLength={120}
+          required
+        />
       </label>
       <div className="form-row form-row--three">
         <label className="field">
@@ -234,8 +244,8 @@ function ActivityRow({ activity, token, onChanged }) {
       <div className="activity__main">
         <div className="activity__title">{activity.title}</div>
         <div className="activity__meta">
-          {CATEGORY_LABELS[activity.category]} · {STAGE_LABELS[activity.stage]}
-          {activity.date && ` · ${shortDate(activity.date)}`} ·{' '}
+          {CATEGORY_LABELS[activity.category]}, {STAGE_LABELS[activity.stage].toLowerCase()}
+          {activity.date && `, ${shortDate(activity.date)}`}.{' '}
           <a href={activity.proofUrl} target="_blank" rel="noreferrer">
             Proof
           </a>
@@ -284,7 +294,13 @@ function ActivityRow({ activity, token, onChanged }) {
         >
           <label className="field">
             {mode === 'upgrade' ? 'Proof of selection or submission' : 'New proof link'}
-            <input type="url" value={proofUrl} onChange={(e) => setProofUrl(e.target.value)} placeholder="https://..." required />
+            <input
+              type="url"
+              value={proofUrl}
+              onChange={(e) => setProofUrl(e.target.value)}
+              placeholder="https://..."
+              required
+            />
           </label>
           <div className="activity__edit-actions">
             <button type="button" className="btn btn--outline" onClick={() => setMode(null)}>
@@ -297,7 +313,11 @@ function ActivityRow({ activity, token, onChanged }) {
         </form>
       )}
 
-      {error && <p className="login__error activity__error" role="alert">{error}</p>}
+      {error && (
+        <p className="login__error activity__error" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

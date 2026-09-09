@@ -17,7 +17,7 @@ export default function NoticeCard({ notice, isNew = false, actions = null }) {
         </div>
       </div>
       <p className="notice__meta">
-        {notice.postedBy?.name ?? 'Admin'} · {audienceLabel(notice)} · {shortDate(notice.createdAt)}
+        {shortDate(notice.createdAt)}, from {notice.postedBy?.name ?? 'Admin'} to {audienceLabel(notice)}
       </p>
       <p className="notice__body">{notice.body}</p>
       {(notice.link || actions) && (

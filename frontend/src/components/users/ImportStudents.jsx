@@ -149,7 +149,7 @@ export default function ImportStudents({ token, departments, batches, onImported
               {problemCount > 0 && (
                 <span className="import__bad">
                   {' '}
-                  · {problemCount} {problemCount === 1 ? 'row needs' : 'rows need'} fixing
+                  . {problemCount} {problemCount === 1 ? 'row needs' : 'rows need'} fixing
                 </span>
               )}
             </span>

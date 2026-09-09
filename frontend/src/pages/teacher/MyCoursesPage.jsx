@@ -125,7 +125,7 @@ export default function MyCoursesPage() {
     <>
       <PageHeader
         kicker="My courses"
-        title={report ? `${report.course.code} · ${report.course.name}` : 'Loading...'}
+        title={report ? `${report.course.name} (${report.course.code})` : 'Loading...'}
         subtitle={report ? `${report.course.batch}, ${report.students.length} students` : ''}
         stats={
           report
@@ -160,7 +160,7 @@ export default function MyCoursesPage() {
           <select value={courseId} onChange={pickCourse}>
             {courses.map((c) => (
               <option key={c._id} value={c._id}>
-                {c.code} · {c.name} · {c.batch?.name}
+                {c.code} {c.name}, {c.batch?.name}
               </option>
             ))}
           </select>
