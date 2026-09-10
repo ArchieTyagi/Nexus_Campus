@@ -26,6 +26,15 @@ export function saveThemeChoice(choice) {
     // Private mode or blocked storage: the theme still changes for this visit
   }
   applyTheme(choice)
+  // Lets every theme control on screen (sidebar, profile page) show the same choice
+  window.dispatchEvent(new CustomEvent('nexus-theme', { detail: choice }))
+}
+
+// Calls back with the new choice whenever it changes anywhere in the app
+export function onThemeChoice(callback) {
+  const listener = (event) => callback(event.detail)
+  window.addEventListener('nexus-theme', listener)
+  return () => window.removeEventListener('nexus-theme', listener)
 }
 
 // On "Auto", switch straight away when the device changes between light and dark
