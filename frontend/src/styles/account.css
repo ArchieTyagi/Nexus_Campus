@@ -70,3 +70,142 @@
   font-size: 15px;
   line-height: 1.5;
 }
+
+/* Profile: label on the left, value on the right */
+.details {
+  margin: 0;
+}
+
+.details__row {
+  display: grid;
+  grid-template-columns: minmax(110px, 160px) minmax(0, 1fr);
+  gap: 12px;
+  padding: 11px 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.details__row:first-child {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.details dt {
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.details dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* Theme picker: three options in a column, the chosen one marked with the amber edge */
+.segmented {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.segmented__option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.segmented__option:hover {
+  border-color: var(--field-hover);
+}
+
+.segmented__option.is-on {
+  border-color: var(--amber-border);
+  background: var(--amber-tint);
+  box-shadow: inset 3px 0 0 var(--amber);
+}
+
+.segmented__label {
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.segmented__hint {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Student courses */
+.course-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.course-item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding: 14px 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.course-item:first-child {
+  padding-top: 2px;
+  border-top: 0;
+}
+
+.course-item__main {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.course-item__name {
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.course-item__meta {
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.course-item__side {
+  flex: 0 1 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+
+.course-item__percent {
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.course-item__note {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .course-item__side {
+    flex-basis: 100%;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
