@@ -31,6 +31,8 @@ import BatchStudentsPage from './pages/batch/BatchStudentsPage.jsx'
 import BatchDashboardPage from './pages/batch/BatchDashboardPage.jsx'
 import TimetableAdminPage from './pages/admin/TimetableAdminPage.jsx'
 import TimetablePage from './pages/student/TimetablePage.jsx'
+import StudentCoursesPage from './pages/student/CoursesPage.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
 
 // Which roles can open each dashboard.
 // HOD is not a backend role yet, so admin can open it for now.
@@ -97,6 +99,8 @@ const dashboards = [
       { path: 'timetable', element: <TimetablePage /> },
       { path: 'sessions', element: <SessionsPage /> },
       { path: 'internships', element: <InternshipsPage /> },
+      { path: 'courses', element: <StudentCoursesPage /> },
+      { path: 'profile', element: <ProfilePage /> },
     ],
   },
 ]

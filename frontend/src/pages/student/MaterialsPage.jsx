@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import PageHeader from '../../components/layout/PageHeader.jsx'
 import Panel from '../../components/ui/Panel.jsx'
 import Icon from '../../components/ui/Icon.jsx'
@@ -10,7 +11,9 @@ import { groupBySubject } from '../../utils/materials.js'
 export default function MaterialsPage() {
   const { token } = useAuth()
   const [items, setItems] = useState(null)
-  const [subject, setSubject] = useState('all')
+  // ?subject=CS201 opens on one subject (the Courses page links here)
+  const [params] = useSearchParams()
+  const [subject, setSubject] = useState(() => params.get('subject') || 'all')
   const [search, setSearch] = useState('')
   const [error, setError] = useState('')
 
@@ -74,7 +77,12 @@ export default function MaterialsPage() {
           <label className="search search--light">
             <Icon name="search" size={18} />
             <span className="sr-only">Search material</span>
-            <input type="search" placeholder="Search titles" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <input
+              type="search"
+              placeholder="Search titles"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </label>
         </div>
 
