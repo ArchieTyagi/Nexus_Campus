@@ -1,6 +1,8 @@
 /* Colours follow the college LMS: dark shell, white panels, amber for what matters */
 :root {
-  /* Dark shell (login and sidebar), like the college LMS */
+  color-scheme: light;
+
+  /* Dark shell (sidebar), like the college LMS. It stays dark in both themes. */
   --bg: #121315;
   --sidebar: #16171a;
   --sidebar-line: #26282c;
@@ -22,13 +24,30 @@
   --soft: #f5f6f7;
   --soft-2: #f0f1f3;
   --track: #e9eaed;
+  --stripe: #e3e5e8;
   --ink: #1c1f24;
   --ink-2: #585e68;
   --bar: #3d424a;
   --line: #dcdfe3;
   --hairline: #e9ebee;
   --field-line: #c9cdd3;
+  --field-hover: #aeb3ba;
+  --muted-dot: #a1a6ae;
+
+  /* Solid "ink" blocks (approved tags, avatars, date chips) and the text on them */
+  --fill-strong: #1c1f24;
+  --on-fill-strong: #ffffff;
+  --on-fill-accent: #f5a524;
+
+  /* The dark "class on now" card */
+  --spot: #1c1f24;
+  --spot-line: #2e3238;
+  --spot-text: #f4f5f6;
+  --spot-muted: #b4b8bf;
+
   --red: #b42318;
+  --red-tint: #fef3f2;
+  --red-tint-border: #fecdca;
 
   --radius-lg: 12px;
   --radius-md: 10px;
@@ -36,6 +55,47 @@
 
   --font-body: 'Public Sans', system-ui, sans-serif;
   --font-display: var(--font-body);
+}
+
+/* Dark theme: same layout, calm greys, brighter amber and red so text stays readable */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0f1012;
+  --sidebar: #101113;
+  --sidebar-line: #212327;
+
+  --amber-text: #f5b84a;
+  --amber-tint: rgba(245, 165, 36, 0.14);
+  --amber-tint-text: #f7c56b;
+
+  --canvas: #141517;
+  --surface: #1c1e21;
+  --soft: #222428;
+  --soft-2: #26282c;
+  --track: #2a2d31;
+  --stripe: #33363b;
+  --ink: #e7e9ec;
+  --ink-2: #a2a7af;
+  --bar: #c3c7cd;
+  --line: #2f3237;
+  --hairline: #282a2f;
+  --field-line: #3d4148;
+  --field-hover: #5a5f67;
+  --muted-dot: #6b7079;
+
+  --fill-strong: #e7e9ec;
+  --on-fill-strong: #16181b;
+  --on-fill-accent: #8f5600;
+
+  --spot: #24272b;
+  --spot-line: #3a3e44;
+  --spot-text: #f4f5f6;
+  --spot-muted: #a9aeb5;
+
+  --red: #f0786b;
+  --red-tint: rgba(240, 120, 107, 0.12);
+  --red-tint-border: rgba(240, 120, 107, 0.35);
 }
 
 * {
