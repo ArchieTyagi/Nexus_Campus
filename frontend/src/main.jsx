@@ -9,6 +9,9 @@ import './styles/login.css'
 import './styles/admin.css'
 import './styles/account.css'
 import App from './App.jsx'
+import { followDeviceTheme } from './utils/theme.js'
+
+followDeviceTheme()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
