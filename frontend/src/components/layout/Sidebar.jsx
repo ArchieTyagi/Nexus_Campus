@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import Icon from '../ui/Icon.jsx'
+import ThemeToggle from '../ui/ThemeToggle.jsx'
 import Logo from '../ui/Logo.jsx'
 import ChangePasswordDialog from '../auth/ChangePasswordDialog.jsx'
 import { navigation } from '../../config/navigation.js'
@@ -50,6 +51,7 @@ export default function Sidebar({ role, collapsed, onToggle }) {
           <Icon name={collapsed ? 'expand' : 'collapse'} />
           <span className="sidebar__text">Collapse</span>
         </button>
+        <ThemeToggle collapsed={collapsed} />
         <button
           type="button"
           className="sidebar__button"
@@ -59,12 +61,7 @@ export default function Sidebar({ role, collapsed, onToggle }) {
           <Icon name="key" />
           <span className="sidebar__text">Change password</span>
         </button>
-        <button
-          type="button"
-          className="sidebar__button"
-          onClick={logout}
-          title={collapsed ? 'Log out' : undefined}
-        >
+        <button type="button" className="sidebar__button" onClick={logout} title={collapsed ? 'Log out' : undefined}>
           <Icon name="logout" />
           <span className="sidebar__text">Log out</span>
         </button>
