@@ -60,7 +60,7 @@
 }
 
 .severity--low {
-  background: #a1a1aa;
+  background: var(--muted-dot);
 }
 
 /* Grid based tables that scroll sideways on phones */
@@ -201,8 +201,8 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--ink);
-  color: var(--amber);
+  background: var(--fill-strong);
+  color: var(--on-fill-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -350,7 +350,7 @@
 }
 
 .timeline__block.is-done {
-  background: #ededf0;
+  background: var(--track);
   color: var(--ink-2);
 }
 
@@ -367,8 +367,8 @@
 }
 
 .timeline__block.is-break {
-  background: repeating-linear-gradient(135deg, var(--soft-2) 0 6px, #eaeaec 6px 12px);
-  border-color: #eaeaec;
+  background: repeating-linear-gradient(135deg, var(--soft-2) 0 6px, var(--stripe) 6px 12px);
+  border-color: var(--stripe);
   color: var(--ink-2);
 }
 
@@ -427,9 +427,9 @@
 
 /* Teacher: the class happening right now */
 .live-class {
-  background: #18181b;
-  border: 1px solid #2c2c31;
-  color: #fafafa;
+  background: var(--spot);
+  border: 1px solid var(--spot-line);
+  color: var(--spot-text);
   border-radius: var(--radius-lg);
   padding: 26px 28px;
   display: flex;
@@ -453,7 +453,7 @@
 
 .live-class__meta {
   font-size: 15px;
-  color: #b4b4bc;
+  color: var(--spot-muted);
 }
 
 .btn--large {
@@ -510,7 +510,7 @@
 .field input:hover,
 .field select:hover,
 .field textarea:hover {
-  border-color: #aeb3ba;
+  border-color: var(--field-hover);
 }
 
 .field input:disabled,
@@ -560,7 +560,7 @@
 }
 
 .mark.is-present {
-  background: #27272a;
+  background: var(--fill-strong);
 }
 
 .mark.is-absent {
@@ -604,7 +604,7 @@
   flex: 0 0 54px;
   height: 58px;
   border-radius: 12px;
-  background: var(--ink);
+  background: var(--fill-strong);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -613,7 +613,7 @@
 
 .date-chip__month {
   font-size: 12.5px;
-  color: var(--amber);
+  color: var(--on-fill-accent);
 }
 
 .date-chip__day {
@@ -621,5 +621,5 @@
   font-size: 22px;
   font-weight: 600;
   line-height: 1;
-  color: #fafafa;
+  color: var(--on-fill-strong);
 }

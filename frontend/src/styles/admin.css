@@ -203,8 +203,8 @@
 }
 
 .status--approved {
-  background: var(--ink);
-  color: #fff;
+  background: var(--fill-strong);
+  color: var(--on-fill-strong);
 }
 
 .status--rejected {
@@ -349,7 +349,7 @@
 }
 
 .notice__tag--important {
-  background: #fef3f2;
+  background: var(--red-tint);
   color: var(--red);
 }
 
@@ -508,8 +508,8 @@
   height: 46px;
   place-items: center;
   border-radius: 8px;
-  background: var(--ink);
-  color: var(--amber);
+  background: var(--fill-strong);
+  color: var(--on-fill-accent);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -589,8 +589,8 @@
 }
 
 .role-tag--admin {
-  background: var(--ink);
-  color: #fff;
+  background: var(--fill-strong);
+  color: var(--on-fill-strong);
 }
 
 .role-tag--hod {
@@ -785,8 +785,8 @@
   margin-bottom: 12px;
   padding: 10px 12px;
   border-radius: var(--radius-sm);
-  background: var(--ink);
-  color: #fff;
+  background: var(--fill-strong);
+  color: var(--on-fill-strong);
   font-size: 15px;
   font-weight: 600;
 }
@@ -928,7 +928,7 @@
 }
 
 .event--deadline .event__date {
-  background: #fef3f2;
+  background: var(--red-tint);
   color: var(--red);
 }
 
@@ -974,8 +974,8 @@
 
 .feedback--change {
   margin: 0 0 14px;
-  border: 1px solid #fecdca;
-  background: #fef3f2;
+  border: 1px solid var(--red-tint-border);
+  background: var(--red-tint);
   color: var(--red);
 }
 
@@ -1167,7 +1167,7 @@
 }
 
 .internship__deadline.is-soon {
-  background: #fef3f2;
+  background: var(--red-tint);
   color: var(--red);
 }
 
@@ -1198,9 +1198,9 @@
 }
 
 .btn.is-done {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: #fff;
+  border-color: var(--fill-strong);
+  background: var(--fill-strong);
+  color: var(--on-fill-strong);
 }
 
 .internship__applied {
@@ -1238,7 +1238,7 @@
 }
 
 .date-chip.is-deadline {
-  background: #fef3f2;
+  background: var(--red-tint);
   color: var(--red);
 }
 
@@ -1448,7 +1448,7 @@
 }
 
 .data-table--import .data-table__row.is-problem {
-  background: #fdf1ef;
+  background: var(--red-tint);
 }
 
 .import__cell {
