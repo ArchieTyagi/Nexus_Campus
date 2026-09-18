@@ -1,102 +1,61 @@
-/* Login: dark intro on the left, white card on the right */
+/* Login and first-password pages: one calm card in the middle of the page */
 .login {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr minmax(380px, 500px);
-  gap: 16px;
-  padding: 16px;
-  background: var(--bg);
+  place-items: center;
+  padding: 40px 16px 64px;
+  background: var(--canvas);
 }
 
-.login__intro {
+.login__wrap {
+  width: min(400px, 100%);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 40px;
-  padding: 32px 40px;
-  color: var(--sidebar-text);
+  gap: 20px;
 }
 
 .login__brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 20px;
+  gap: 10px;
+  color: var(--ink);
+  font-size: 17px;
   font-weight: 700;
 }
 
-.login__headline {
-  max-width: 13ch;
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: clamp(36px, 4.4vw, 58px);
-  line-height: 1.04;
-  letter-spacing: -0.02em;
-}
-
-.login__headline em {
-  font-style: normal;
-  color: var(--amber);
-}
-
-.login__sub {
-  max-width: 44ch;
-  margin-top: 18px;
-  color: var(--sidebar-muted);
-  font-size: 16px;
-  line-height: 1.55;
-}
-
-.login__roles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.login__roles li {
-  padding: 6px 12px;
-  border: 1px solid var(--sidebar-line);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
+/* The amber top edge matches the active tab in the sidebar */
 .login__card {
-  display: flex;
-  align-items: center;
-  padding: 48px 44px;
+  padding: 26px 28px 22px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--amber);
   border-radius: var(--radius-lg);
   background: var(--surface);
 }
 
 .login__form {
   width: 100%;
-  gap: 18px;
+  gap: 16px;
 }
 
 .login__title {
-  font-family: var(--font-display);
-  font-size: 30px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
   letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .login__hint {
-  margin-top: 6px;
+  margin-top: 4px;
   color: var(--ink-2);
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 14.5px;
 }
 
 .login__error {
   padding: 10px 12px;
-  border: 1px solid #fecdca;
+  border: 1px solid var(--red-tint-border);
   border-radius: var(--radius-sm);
-  background: #fef3f2;
+  background: var(--red-tint);
   color: var(--red);
   font-size: 14px;
 }
@@ -114,7 +73,7 @@
 .password-field button {
   position: absolute;
   top: 50%;
-  right: 8px;
+  right: 6px;
   transform: translateY(-50%);
   padding: 6px 8px;
   border: 0;
@@ -131,37 +90,28 @@
 }
 
 .login__foot {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
   color: var(--ink-2);
-  font-size: 13px;
-  text-align: center;
+  font-size: 13.5px;
+}
+
+.login__about {
+  color: var(--ink-2);
+  font-size: 13.5px;
 }
 
 .auth-loading {
   display: grid;
   min-height: 100vh;
   place-items: center;
-  color: var(--sidebar-muted);
+  background: var(--canvas);
+  color: var(--ink-2);
 }
 
-@media (max-width: 860px) {
-  .login {
-    grid-template-columns: 1fr;
-  }
-
-  .login__intro {
-    gap: 24px;
-    padding: 20px 8px 8px;
-  }
-
-  .login__headline {
-    font-size: 34px;
-  }
-
-  .login__roles {
-    display: none;
-  }
-
-  .login__card {
-    padding: 32px 22px;
-  }
+/* Inside the app the loading text sits in the page, not full screen */
+.main .auth-loading {
+  min-height: 40vh;
+  background: none;
 }
