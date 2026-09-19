@@ -9,35 +9,31 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="login">
-      <section className="login__intro">
+      <main className="login__wrap">
         <div className="login__brand">
-          <Logo size={38} />
+          <Logo size={32} />
           <span>Nexus Campus</span>
         </div>
-        <div>
-          <h1 className="login__headline">
-            Welcome{firstName && `, ${firstName}`}. <em>Make it yours.</em>
-          </h1>
-          <p className="login__sub">
-            You logged in with a temporary password. Set your own before you continue, so only you can get into your
-            account.
-          </p>
-        </div>
-        <span />
-      </section>
 
-      <section className="login__card">
-        <div className="login__form">
-          <div>
-            <h2 className="login__title">Set your password</h2>
-            <p className="login__hint">Use the temporary password you were given as the current password.</p>
+        <section className="login__card">
+          <div className="login__form">
+            <div>
+              <h1 className="login__title">Welcome{firstName && `, ${firstName}`}. Set your own password</h1>
+              <p className="login__hint">
+                You logged in with a temporary password. Enter it as the current password, then choose one only you
+                know.
+              </p>
+            </div>
+            <ChangePasswordForm submitLabel="Save and continue" />
           </div>
-          <ChangePasswordForm submitLabel="Save and continue" />
-          <button type="button" className="link-button pw-logout" onClick={logout}>
-            Log out instead
-          </button>
-        </div>
-      </section>
+          <p className="login__foot">
+            Not you?{' '}
+            <button type="button" className="link-button" onClick={logout}>
+              Log out
+            </button>
+          </p>
+        </section>
+      </main>
     </div>
   )
 }
