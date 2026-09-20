@@ -1,37 +1,41 @@
 /* Colours follow the college LMS: dark shell, white panels, amber for what matters */
 :root {
-  --bg: #0b0b0c;
-  --sidebar: #111113;
-  --sidebar-line: #1f1f23;
-  --sidebar-text: #c4c4cc;
-  --sidebar-muted: #8e8e97;
-  --sidebar-active: #2a1e0e;
+  /* Dark shell (login and sidebar), like the college LMS */
+  --bg: #121315;
+  --sidebar: #16171a;
+  --sidebar-line: #26282c;
+  --sidebar-text: #c9cbd0;
+  --sidebar-muted: #8b8f97;
+  --sidebar-active: rgba(245, 165, 36, 0.12);
 
+  /* College amber: actions and what needs attention */
   --amber: #f5a524;
   --amber-border: #e0921a;
   --amber-ink: #1c1407;
-  --amber-text: #a15c07;
-  --amber-tint: #fef3dc;
-  --amber-tint-text: #8a4b05;
+  --amber-text: #8f5600;
+  --amber-tint: #fdf1d8;
+  --amber-tint-text: #7a4700;
 
+  /* The working area: light paper with white sheets on it */
+  --canvas: #edeef0;
   --surface: #ffffff;
-  --soft: #f7f7f8;
-  --soft-2: #f4f4f5;
-  --track: #f0f0f2;
-  --ink: #18181b;
-  --ink-2: #52525b;
-  --bar: #3f3f46;
-  --line: #e4e4e7;
-  --hairline: #efeff1;
-  --field-line: #d4d4d8;
+  --soft: #f5f6f7;
+  --soft-2: #f0f1f3;
+  --track: #e9eaed;
+  --ink: #1c1f24;
+  --ink-2: #585e68;
+  --bar: #3d424a;
+  --line: #dcdfe3;
+  --hairline: #e9ebee;
+  --field-line: #c9cdd3;
   --red: #b42318;
 
-  --radius-lg: 22px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
+  --radius-lg: 12px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
 
-  --font-body: 'Instrument Sans', system-ui, sans-serif;
-  --font-display: 'Bricolage Grotesque', var(--font-body);
+  --font-body: 'Public Sans', system-ui, sans-serif;
+  --font-display: var(--font-body);
 }
 
 * {
@@ -43,6 +47,8 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
 }
