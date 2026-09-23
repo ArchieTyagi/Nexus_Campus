@@ -491,7 +491,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
 }
 
@@ -500,16 +500,28 @@
 .field textarea {
   padding: 0 12px;
   border: 1px solid var(--field-line);
-  border-radius: 12px;
-  background: var(--soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   font-size: 15px;
   font-weight: 400;
   color: var(--ink);
 }
 
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
+  border-color: #aeb3ba;
+}
+
+.field input:disabled,
+.field select:disabled {
+  background: var(--soft);
+  color: var(--ink-2);
+}
+
 .field input,
 .field select {
-  height: 46px;
+  height: 40px;
 }
 
 .field textarea {
