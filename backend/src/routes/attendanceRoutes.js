@@ -1,7 +1,7 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import {
-  myCourses, startSession, sessionQr, sessionDetail, closeSession, markByHand, scan, myAttendance,
+  myCourses, courseReport, startSession, sessionQr, sessionDetail, closeSession, markByHand, scan, myAttendance,
 } from "../controllers/attendanceController.js";
 import { protect, allow } from "../middleware/auth.js";
 
@@ -24,6 +24,7 @@ router.get("/mine", allow("student"), myAttendance);
 // Teachers run the QR session (HOD and admin can too)
 const staff = allow("teacher", "hod", "admin");
 router.get("/courses", staff, myCourses);
+router.get("/courses/:id/report", staff, courseReport);
 router.post("/sessions", staff, startSession);
 router.get("/sessions/:id", staff, sessionDetail);
 router.get("/sessions/:id/qr", staff, sessionQr);

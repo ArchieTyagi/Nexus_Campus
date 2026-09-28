@@ -209,3 +209,63 @@ export const myAttendance = async (req, res) => {
     recent: recent.map((r) => ({ _id: r._id, course: r.course?.code, startedAt: r.startedAt, present: presentIn.has(String(r._id)) })),
   });
 };
+
+// GET /api/attendance/courses/:id/report   (the course's teacher, an HOD of its department, admin)
+// The whole class for one course: every student's attendance, plus the recent classes and how many came.
+const REPORT_RECENT = 12; // recent classes shown as P / A marks
+
+export const courseReport = async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) throw new AppError("Course not found", 404);
+  const course = await Course.findById(req.params.id).populate("batch", "name");
+  if (!course) throw new AppError("Course not found", 404);
+  if (!(await canRun(req.user, course))) throw new AppError("This is not your class", 403);
+
+  const [sessions, students, marks] = await Promise.all([
+    AttendanceSession.find({ course: course._id }).sort({ startedAt: 1 }),
+    Student.find({ batch: course.batch?._id }).populate("user", "name email isActive").sort({ rollNumber: 1 }),
+    Attendance.find({ course: course._id }).select("session student"),
+  ]);
+  // Deactivated students are left out
+  const active = students.filter((s) => s.user?.isActive);
+  const present = new Set(marks.map((m) => `${m.session}:${m.student}`));
+  const recent = sessions.slice(-REPORT_RECENT);
+  const held = sessions.length;
+
+  const rows = active.map((s) => {
+    const attended = sessions.filter((se) => present.has(`${se._id}:${s._id}`)).length;
+    const ok = held === 0 || attended / held >= MINIMUM;
+    return {
+      _id: s._id,
+      name: s.user.name,
+      email: s.user.email,
+      rollNumber: s.rollNumber,
+      attended,
+      percent: held ? Math.round((attended / held) * 100) : null,
+      ok,
+      // Below 75%: classes in a row needed to get back. At or above: classes they can still miss.
+      toRecover: ok ? 0 : 3 * held - 4 * attended,
+      canMiss: ok && held ? Math.floor(attended / MINIMUM - held) : 0,
+      recent: recent.map((se) => (present.has(`${se._id}:${s._id}`) ? "P" : "A")).join(""),
+    };
+  });
+  const activeIds = new Set(active.map((s) => String(s._id)));
+  const totalAttended = rows.reduce((n, r) => n + r.attended, 0);
+
+  res.json({
+    course: { _id: course._id, code: course.code, name: course.name, batch: course.batch?.name ?? "" },
+    held,
+    average: held && rows.length ? Math.round((totalAttended / (held * rows.length)) * 100) : null,
+    below: rows.filter((r) => !r.ok).length,
+    // Newest class first, with how many of today's students were present
+    classes: recent
+      .slice()
+      .reverse()
+      .map((se) => ({
+        _id: se._id,
+        startedAt: se.startedAt,
+        isOpen: se.isOpen,
+        present: marks.filter((m) => String(m.session) === String(se._id) && activeIds.has(String(m.student))).length,
+      })),
+    students: rows,
+  });
+};
