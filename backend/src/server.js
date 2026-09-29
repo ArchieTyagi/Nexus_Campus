@@ -27,11 +27,23 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
+// Online, the hosting site passes every request through its own servers first.
+// TRUST_PROXY = how many of those servers to skip to find the visitor's real IP address,
+// so the login and scan limits count each person separately. Leave it out when running locally.
+const proxyHops = Number(process.env.TRUST_PROXY || 0);
+if (proxyHops > 0) app.set("trust proxy", proxyHops);
+
+// CLIENT_URL can list more than one site, separated by commas (for example the live site and localhost)
+const allowedSites = (process.env.CLIENT_URL || "http://localhost:5173")
+  .split(",")
+  .map((url) => url.trim().replace(/\/$/, ""))
+  .filter(Boolean);
+app.use(cors({ origin: allowedSites }));
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Nexus Campus backend is running" });
+  // ip = the address the server sees for you. Used once after going online to set TRUST_PROXY correctly.
+  res.json({ status: "ok", message: "Nexus Campus backend is running", ip: req.ip });
 });
 
 app.use("/api/auth", authRoutes);

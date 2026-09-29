@@ -1,5 +1,7 @@
 import Student from "../models/Student.js";
 import Teacher from "../models/Teacher.js";
+import User from "../models/User.js";
+import Department from "../models/Department.js";
 import Course from "../models/Course.js";
 import TimetableSlot, { DAYS } from "../models/TimetableSlot.js";
 import AttendanceSession from "../models/AttendanceSession.js";
@@ -20,6 +22,10 @@ import { thisMonth } from "./ojtController.js";
 const RECENT = 12; // how many recent classes to show per subject
 const DAY_MS = 86400000;
 const IST_DAY_END_MS = (24 - 5.5) * 3600000; // same rule as internships
+
+// When today started in India (midnight IST), as a Date
+const IST_MS = 5.5 * 3600000;
+const indiaMidnight = () => new Date(Math.floor((Date.now() + IST_MS) / DAY_MS) * DAY_MS - IST_MS);
 
 // Time now in India as "HH:MM", and today's short day name ("Mon")
 const indiaNow = () => {
@@ -257,9 +263,7 @@ export const teacherDashboard = async (req, res) => {
   const attendedBy = new Map(marks.map((m) => [`${m._id.course}:${m._id.student}`, m.n]));
 
   // Attendance already taken today (India time) for each course: the latest session and how many were present
-  const IST_MS = 5.5 * 3600000;
-  const indiaMidnight = new Date(Math.floor((Date.now() + IST_MS) / DAY_MS) * DAY_MS - IST_MS);
-  const todaySessions = sessions.filter((s) => s.startedAt >= indiaMidnight);
+  const todaySessions = sessions.filter((s) => s.startedAt >= indiaMidnight());
   const presentToday = await Attendance.aggregate([
     { $match: { session: { $in: todaySessions.map((s) => s._id) } } },
     { $group: { _id: "$session", n: { $sum: 1 } } },
@@ -336,6 +340,198 @@ export const teacherDashboard = async (req, res) => {
       below: watch.length,
     },
     notices: notices.map((n) => ({ _id: n._id, title: n.title, important: n.important, postedBy: n.postedBy?.name, createdAt: n.createdAt })),
+    unreadNotices: unread,
+  });
+};
+
+// GET /api/dashboard/admin   (admin)  The whole college at a glance:
+// numbers, things that need fixing, each department's attendance, classes running now, latest notices.
+export const adminDashboard = async (req, res) => {
+  const { time, day } = indiaNow();
+  const audience = await visibleTo(req.user);
+  const since = indiaMidnight();
+  const toMin = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+  const nowMin = toMin(time);
+
+  const [departments, batches, students, teachers, slots, todaySessions, heldByBatch, marks, noTeacher, tempUsers, pendingActivities, pendingOjt, notices, unread] =
+    await Promise.all([
+      Department.find().sort({ name: 1 }),
+      Batch.find().populate("department", "code").sort({ name: 1 }),
+      Student.find().populate("user", "isActive").select("batch department user"),
+      Teacher.find().populate("user", "isActive role").select("department user"),
+      DAYS.includes(day)
+        ? TimetableSlot.find({ day })
+            .populate("course", "code name")
+            .populate("batch", "name")
+            .populate({ path: "teacher", select: "user", populate: { path: "user", select: "name" } })
+            .sort({ startTime: 1 })
+        : [],
+      AttendanceSession.find({ startedAt: { $gte: since } }).select("course startedAt endsAt closedAt"),
+      AttendanceSession.aggregate([{ $group: { _id: "$batch", n: { $sum: 1 } } }]),
+      Attendance.aggregate([{ $group: { _id: "$student", n: { $sum: 1 } } }]),
+      Course.find({ teacher: null }).populate("batch", "name").select("code batch").sort({ code: 1 }),
+      User.find({ isActive: true, mustChangePassword: true, role: { $ne: "admin" } }).select("role"),
+      Activity.countDocuments({ status: "pending" }),
+      OjtUpdate.countDocuments({ status: "submitted" }),
+      Notice.find(audience).sort({ createdAt: -1 }).limit(3).populate("postedBy", "name").populate("department", "code").populate("batch", "name"),
+      Notice.countDocuments({ ...audience, createdAt: { $gt: req.user.noticesSeenAt || new Date(0) }, postedBy: { $ne: req.user._id } }),
+    ]);
+
+  // Only active people count
+  const activeStudents = students.filter((s) => s.user?.isActive);
+  const activeTeachers = teachers.filter((t) => t.user?.isActive);
+  const studentsIn = new Map();
+  for (const s of activeStudents) studentsIn.set(String(s.batch), (studentsIn.get(String(s.batch)) || 0) + 1);
+  const heldIn = new Map(heldByBatch.map((h) => [String(h._id), h.n]));
+  const attendedBy = new Map(marks.map((m) => [String(m._id), m.n]));
+  const slotsIn = new Set((await TimetableSlot.distinct("batch")).map(String));
+
+  // Attendance for each department: classes attended / (classes held x students), over all its batches
+  const deptRows = departments.map((d) => {
+    const own = batches.filter((b) => String(b.department?._id) === String(d._id));
+    let possible = 0;
+    let attended = 0;
+    for (const b of own) possible += (heldIn.get(String(b._id)) || 0) * (studentsIn.get(String(b._id)) || 0);
+    for (const s of activeStudents) {
+      if (own.some((b) => String(b._id) === String(s.batch))) attended += attendedBy.get(String(s._id)) || 0;
+    }
+    return {
+      _id: d._id,
+      name: d.name,
+      code: d.code,
+      batches: own.length,
+      students: own.reduce((n, b) => n + (studentsIn.get(String(b._id)) || 0), 0),
+      teachers: activeTeachers.filter((t) => String(t.department) === String(d._id)).length,
+      attendance: possible ? Math.round((attended / possible) * 100) : null,
+    };
+  });
+
+  // Today's classes: which have ended, which are running, and which ended with no attendance taken
+  const sessionsFor = (courseId) => todaySessions.filter((s) => String(s.course) === String(courseId));
+  const ended = slots.filter((s) => toMin(s.endTime) <= nowMin);
+  const endedPerCourse = new Map();
+  for (const s of ended) endedPerCourse.set(String(s.course?._id), [...(endedPerCourse.get(String(s.course?._id)) || []), s]);
+  const missed = [];
+  for (const [courseId, list] of endedPerCourse) {
+    // Two classes of one course today but only one session: one of them was missed
+    missed.push(...list.slice(sessionsFor(courseId).length));
+  }
+  const running = slots
+    .filter((s) => toMin(s.startTime) <= nowMin && nowMin < toMin(s.endTime))
+    .map((s) => {
+      const list = sessionsFor(s.course?._id);
+      const open = list.find((x) => x.isOpen);
+      return {
+        _id: s._id,
+        code: s.course?.code,
+        name: s.course?.name,
+        batch: s.batch?.name ?? "",
+        teacher: s.teacher?.user?.name ?? "No teacher",
+        room: s.room || "",
+        start: s.startTime,
+        end: s.endTime,
+        attendance: open ? "open" : list.length ? "taken" : "not_taken",
+      };
+    });
+
+  // Things that need the admin, most urgent first
+  const attention = [];
+  const names = (list, key, max = 4) => {
+    const shown = list.slice(0, max).map(key).join(", ");
+    return list.length > max ? `${shown} and ${list.length - max} more` : shown;
+  };
+  if (missed.length) {
+    attention.push({
+      key: "missed",
+      severity: "high",
+      title: `${missed.length} ${missed.length === 1 ? "class" : "classes"} ended today without attendance`,
+      detail: names(missed, (s) => `${s.course?.code} (${s.batch?.name}, ${s.startTime})`),
+    });
+  }
+  const noTimetable = batches.filter((b) => studentsIn.get(String(b._id)) && !slotsIn.has(String(b._id)));
+  if (noTimetable.length) {
+    attention.push({
+      key: "timetable",
+      severity: "high",
+      title: `${noTimetable.length} ${noTimetable.length === 1 ? "batch has" : "batches have"} students but no timetable`,
+      detail: names(noTimetable, (b) => `${b.department?.code ?? ""} ${b.name}`.trim()),
+      link: "/admin/timetable",
+      action: "Build timetable",
+    });
+  }
+  if (noTeacher.length) {
+    attention.push({
+      key: "teacher",
+      severity: "mid",
+      title: `${noTeacher.length} ${noTeacher.length === 1 ? "course has" : "courses have"} no teacher`,
+      detail: names(noTeacher, (c) => `${c.code} (${c.batch?.name ?? "no batch"})`),
+      link: "/admin/courses",
+      action: "Assign teachers",
+    });
+  }
+  if (pendingActivities) {
+    attention.push({
+      key: "activities",
+      severity: "mid",
+      title: `${pendingActivities} impact ${pendingActivities === 1 ? "claim is" : "claims are"} waiting for review`,
+      detail: "Students' points stay on hold until someone approves them",
+      link: "/admin/activities",
+      action: "Review",
+    });
+  }
+  if (pendingOjt) {
+    attention.push({
+      key: "ojt",
+      severity: "mid",
+      title: `${pendingOjt} OJT ${pendingOjt === 1 ? "update is" : "updates are"} waiting for review`,
+      detail: "Sent by students, not reviewed yet",
+      link: "/admin/ojt",
+      action: "Review",
+    });
+  }
+  const noManager = batches.filter((b) => studentsIn.get(String(b._id)) && !b.manager);
+  if (noManager.length) {
+    attention.push({
+      key: "manager",
+      severity: "low",
+      title: `${noManager.length} ${noManager.length === 1 ? "batch has" : "batches have"} no batch manager`,
+      detail: names(noManager, (b) => `${b.department?.code ?? ""} ${b.name}`.trim()),
+      link: "/admin/users",
+      action: "Add a manager",
+    });
+  }
+  if (tempUsers.length) {
+    const studentsOnTemp = tempUsers.filter((u) => u.role === "student").length;
+    attention.push({
+      key: "password",
+      severity: "low",
+      title: `${tempUsers.length} ${tempUsers.length === 1 ? "person has" : "people have"} not logged in yet`,
+      detail: `Still on a temporary password: ${studentsOnTemp} ${studentsOnTemp === 1 ? "student" : "students"}, ${tempUsers.length - studentsOnTemp} staff`,
+      link: "/admin/users",
+      action: "See users",
+    });
+  }
+
+  const audienceLabel = (n) =>
+    n.audience === "batch" ? n.batch?.name ?? "One batch" : n.audience === "department" ? n.department?.code ?? "One department" : "Everyone";
+
+  res.json({
+    me: { name: req.user.name },
+    now: time,
+    stats: {
+      students: activeStudents.length,
+      batches: batches.length,
+      teachers: activeTeachers.length,
+      departments: departments.length,
+      classesToday: slots.length,
+      runningNow: running.length,
+      endedToday: ended.length,
+      markedToday: ended.length - missed.length,
+    },
+    attention,
+    departments: deptRows,
+    running,
+    notices: notices.map((n) => ({ _id: n._id, title: n.title, audience: audienceLabel(n), postedBy: n.postedBy?.name, createdAt: n.createdAt })),
     unreadNotices: unread,
   });
 };
