@@ -19,6 +19,7 @@ import MaterialsAdminPage from './pages/admin/MaterialsAdminPage.jsx'
 import UsersPage from './pages/admin/UsersPage.jsx'
 import CoursesPage from './pages/admin/CoursesPage.jsx'
 import TakeAttendancePage from './pages/teacher/TakeAttendancePage.jsx'
+import MyCoursesPage from './pages/teacher/MyCoursesPage.jsx'
 import AttendancePage from './pages/student/AttendancePage.jsx'
 import OjtPage from './pages/student/OjtPage.jsx'
 import OjtAdminPage from './pages/admin/OjtAdminPage.jsx'
@@ -77,6 +78,7 @@ const dashboards = [
     page: <TeacherDashboard />,
     allow: ['teacher'],
     pages: [
+      { path: 'courses', element: <MyCoursesPage /> },
       { path: 'attendance', element: <TakeAttendancePage /> },
       { path: 'timetable', element: <TimetablePage /> },
       { path: 'notices', element: <NoticesPage /> },

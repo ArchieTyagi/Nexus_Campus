@@ -183,7 +183,7 @@ export default function TeacherDashboard() {
               <p className="empty-note">No courses are assigned to you yet. Ask the admin to assign you in Courses.</p>
             )}
             {data.courses.map((c) => (
-              <div className="list-row" key={c._id}>
+              <Link to={`/teacher/courses?course=${c._id}`} className="list-row list-row--link" key={c._id}>
                 <div className="list-row__body">
                   <div className="list-row__title">
                     {c.code} · {c.name}
@@ -199,7 +199,7 @@ export default function TeacherDashboard() {
                   </div>
                   <div className="list-row__meta">{c.below ? `${c.below} below 75%` : 'average'}</div>
                 </div>
-              </div>
+              </Link>
             ))}
           </Panel>
 
