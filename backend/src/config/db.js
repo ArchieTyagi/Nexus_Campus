@@ -9,4 +9,4 @@ export const connectDB = async () => {
   }
   await mongoose.connect(url);
   console.log("MongoDB connected");
-};
+}; 
