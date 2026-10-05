@@ -1,4 +1,5 @@
 import Student from "../models/Student.js";
+import Teacher from "../models/Teacher.js";
 import Course from "../models/Course.js";
 import TimetableSlot, { DAYS } from "../models/TimetableSlot.js";
 import AttendanceSession from "../models/AttendanceSession.js";
@@ -222,5 +223,100 @@ export const batchDashboard = async (req, res) => {
     subjects,
     top,
     upcoming: upcoming.map((e) => ({ _id: e._id, type: e.type, title: e.title, startsAt: e.startsAt, place: e.place })),
+  });
+};
+
+// GET /api/dashboard/teacher   (teacher, hod)  The teacher home screen in one call:
+// today's classes, an attendance session still running, each course's attendance, and students below 75%.
+export const teacherDashboard = async (req, res) => {
+  const teacher = await Teacher.findOne({ user: req.user._id }).populate("department", "name code");
+  if (!teacher) throw new AppError("Teacher profile not found", 404);
+  const { time, day } = indiaNow();
+  const audience = await visibleTo(req.user);
+
+  const courses = await Course.find({ teacher: teacher._id }).populate("batch", "name").sort({ code: 1 });
+  const courseIds = courses.map((c) => c._id);
+  const batchIds = [...new Set(courses.map((c) => String(c.batch?._id)).filter(Boolean))];
+
+  const [todaySlots, sessions, marks, students, open, notices, unread] = await Promise.all([
+    DAYS.includes(day)
+      ? TimetableSlot.find({ teacher: teacher._id, day }).populate("course", "code name").populate("batch", "name").sort({ startTime: 1 })
+      : [],
+    AttendanceSession.find({ course: { $in: courseIds } }).select("course startedAt"),
+    // How many classes each student attended, per course
+    Attendance.aggregate([
+      { $match: { course: { $in: courseIds } } },
+      { $group: { _id: { course: "$course", student: "$student" }, n: { $sum: 1 } } },
+    ]),
+    Student.find({ batch: { $in: batchIds } }).populate("user", "name isActive").select("rollNumber batch user"),
+    AttendanceSession.findOne({ course: { $in: courseIds }, closedAt: null, endsAt: { $gt: new Date() } }).populate("course", "code"),
+    Notice.find(audience).sort({ pinned: -1, createdAt: -1 }).limit(3).populate("postedBy", "name"),
+    Notice.countDocuments({ ...audience, createdAt: { $gt: req.user.noticesSeenAt || new Date(0) }, postedBy: { $ne: req.user._id } }),
+  ]);
+
+  const attendedBy = new Map(marks.map((m) => [`${m._id.course}:${m._id.student}`, m.n]));
+  // Deactivated students are left out of every number
+  const activeIn = (batchId) => students.filter((s) => s.user?.isActive && String(s.batch) === String(batchId));
+
+  const watch = [];
+  const perCourse = courses.map((c) => {
+    const held = sessions.filter((s) => String(s.course) === String(c._id));
+    const lastClass = held.reduce((last, s) => (!last || s.startedAt > last ? s.startedAt : last), null);
+    const list = activeIn(c.batch?._id);
+    let totalAttended = 0;
+    let below = 0;
+    for (const s of list) {
+      const attended = attendedBy.get(`${c._id}:${s._id}`) || 0;
+      totalAttended += attended;
+      if (held.length > 0 && attended / held.length < MIN) {
+        below++;
+        watch.push({
+          name: s.user.name,
+          rollNumber: s.rollNumber,
+          course: c.code,
+          attended,
+          held: held.length,
+          percent: pct(attended, held.length),
+          // Classes in a row needed to get back to 75%: (a + n) / (h + n) >= 0.75 means n >= 3h - 4a
+          toRecover: 3 * held.length - 4 * attended,
+        });
+      }
+    }
+    return {
+      _id: c._id,
+      code: c.code,
+      name: c.name,
+      batch: c.batch?.name ?? "",
+      students: list.length,
+      held: held.length,
+      average: pct(totalAttended, held.length * list.length),
+      below,
+      lastClass,
+    };
+  });
+  watch.sort((a, b) => a.percent - b.percent || a.name.localeCompare(b.name));
+
+  res.json({
+    me: { name: req.user.name, employeeId: teacher.employeeId, department: teacher.department?.name ?? "" },
+    now: time,
+    today: todaySlots.map((s) => ({
+      start: s.startTime,
+      end: s.endTime,
+      label: s.course?.code,
+      title: s.course?.name,
+      place: [s.batch?.name, s.room].filter(Boolean).join(" · "),
+      course: s.course?._id,
+    })),
+    openSession: open ? { _id: open._id, course: open.course?.code, endsAt: open.endsAt } : null,
+    courses: perCourse,
+    watch,
+    stats: {
+      classesToday: todaySlots.length,
+      courses: courses.length,
+      students: batchIds.reduce((n, b) => n + activeIn(b).length, 0),
+      below: watch.length,
+    },
+    notices: notices.map((n) => ({ _id: n._id, title: n.title, important: n.important, postedBy: n.postedBy?.name, createdAt: n.createdAt })),
+    unreadNotices: unread,
   });
 };
