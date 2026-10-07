@@ -1,1 +1,2 @@
 # Nexus_Campus
+COLLEGE MANAGMENT APP 
