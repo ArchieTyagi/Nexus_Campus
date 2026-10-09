@@ -255,6 +255,24 @@ export const teacherDashboard = async (req, res) => {
   ]);
 
   const attendedBy = new Map(marks.map((m) => [`${m._id.course}:${m._id.student}`, m.n]));
+
+  // Attendance already taken today (India time) for each course: the latest session and how many were present
+  const IST_MS = 5.5 * 3600000;
+  const indiaMidnight = new Date(Math.floor((Date.now() + IST_MS) / DAY_MS) * DAY_MS - IST_MS);
+  const todaySessions = sessions.filter((s) => s.startedAt >= indiaMidnight);
+  const presentToday = await Attendance.aggregate([
+    { $match: { session: { $in: todaySessions.map((s) => s._id) } } },
+    { $group: { _id: "$session", n: { $sum: 1 } } },
+  ]);
+  const presentIn = new Map(presentToday.map((p) => [String(p._id), p.n]));
+  const takenToday = (courseId) => {
+    const latest = todaySessions
+      .filter((s) => String(s.course) === String(courseId))
+      .sort((a, b) => b.startedAt - a.startedAt)[0];
+    if (!latest) return null;
+    const course = courses.find((c) => String(c._id) === String(courseId));
+    return { present: presentIn.get(String(latest._id)) || 0, total: activeIn(course?.batch?._id).length, at: latest.startedAt };
+  };
   // Deactivated students are left out of every number
   const activeIn = (batchId) => students.filter((s) => s.user?.isActive && String(s.batch) === String(batchId));
 
@@ -306,8 +324,9 @@ export const teacherDashboard = async (req, res) => {
       title: s.course?.name,
       place: [s.batch?.name, s.room].filter(Boolean).join(" · "),
       course: s.course?._id,
+      taken: s.course ? takenToday(s.course._id) : null,
     })),
-    openSession: open ? { _id: open._id, course: open.course?.code, endsAt: open.endsAt } : null,
+    openSession: open ? { _id: open._id, course: open.course?.code, courseId: open.course?._id, endsAt: open.endsAt } : null,
     courses: perCourse,
     watch,
     stats: {
