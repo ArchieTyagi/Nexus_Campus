@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import PageHeader from '../../components/layout/PageHeader.jsx'
 import Panel from '../../components/ui/Panel.jsx'
 import QrCode from '../../components/attendance/QrCode.jsx'
@@ -15,9 +16,12 @@ function minutesLeft(endsAt, now) {
 
 export default function TakeAttendancePage() {
   const { token } = useAuth()
+  // ?course=<id> picks the course, ?session=<id> opens a running session (both come from the dashboard)
+  const [params, setParams] = useSearchParams()
   const [courses, setCourses] = useState(null)
   const [courseId, setCourseId] = useState('')
-  const [sessionId, setSessionId] = useState(null)
+  const [sessionId, setSessionId] = useState(() => params.get('session'))
+  const wantedCourse = params.get('course')
   const [error, setError] = useState('')
   const [starting, setStarting] = useState(false)
 
@@ -25,10 +29,11 @@ export default function TakeAttendancePage() {
     api('/attendance/courses', { token })
       .then((list) => {
         setCourses(list)
-        if (list[0]) setCourseId(list[0]._id)
+        const wanted = list.find((c) => c._id === wantedCourse)
+        if (wanted || list[0]) setCourseId((wanted ?? list[0])._id)
       })
       .catch((err) => setError(err.message))
-  }, [token])
+  }, [token, wantedCourse])
 
   async function start() {
     setError('')
@@ -44,7 +49,17 @@ export default function TakeAttendancePage() {
   }
 
   if (sessionId) {
-    return <LiveSession key={sessionId} sessionId={sessionId} token={token} onDone={() => setSessionId(null)} />
+    return (
+      <LiveSession
+        key={sessionId}
+        sessionId={sessionId}
+        token={token}
+        onDone={() => {
+          setSessionId(null)
+          setParams({}, { replace: true })
+        }}
+      />
+    )
   }
 
   return (
@@ -161,7 +176,7 @@ function LiveSession({ sessionId, token, onDone }) {
       setDetail((d) => ({
         ...d,
         students: d.students.map((s) =>
-          s._id === student._id ? { ...s, present: data.marked, markedBy: data.marked ? 'teacher' : null } : s
+          s._id === student._id ? { ...s, present: data.marked, markedBy: data.marked ? 'teacher' : null } : s,
         ),
       }))
       setLive((l) => ({ ...l, present: data.present }))
@@ -180,7 +195,11 @@ function LiveSession({ sessionId, token, onDone }) {
       <PageHeader
         kicker={isOpen ? 'Attendance is open' : 'Attendance closed'}
         title={course ? `${course.code} · ${course.name}` : 'Attendance'}
-        subtitle={isOpen ? 'Students: open Nexus Campus, go to Attendance and tap Scan.' : 'You can still mark students by hand below.'}
+        subtitle={
+          isOpen
+            ? 'Students: open Nexus Campus, go to Attendance and tap Scan.'
+            : 'You can still mark students by hand below.'
+        }
         stats={[
           {
             label: 'Present',
@@ -231,7 +250,7 @@ function LiveSession({ sessionId, token, onDone }) {
             description="Tap a name to mark present or absent by hand, for example if a phone is dead."
           >
             <ul className="roll-list">
-              {(isOpen ? absent : detail?.students ?? []).map((s) => (
+              {(isOpen ? absent : (detail?.students ?? [])).map((s) => (
                 <li key={s._id}>
                   <button type="button" className={`roll ${s.present ? 'is-present' : ''}`} onClick={() => toggle(s)}>
                     <span className="roll__name">

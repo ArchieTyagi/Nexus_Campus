@@ -79,6 +79,7 @@ const dashboards = [
     pages: [
       { path: 'attendance', element: <TakeAttendancePage /> },
       { path: 'timetable', element: <TimetablePage /> },
+      { path: 'notices', element: <NoticesPage /> },
     ],
   },
   {
