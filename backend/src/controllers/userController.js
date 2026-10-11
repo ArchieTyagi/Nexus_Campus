@@ -9,7 +9,16 @@ import AppError from "../utils/AppError.js";
 import { getProfile } from "../utils/profile.js";
 import { hodDepartment, managedBatchIds } from "../utils/viewer.js";
 
-const makeTempPassword = () => crypto.randomBytes(6).toString("base64url"); // 8 characters
+// Temporary password: 8 letters and digits, always starting with a letter.
+// Look-alike characters (0, O, 1, l, I) are left out so it is easy to read out loud,
+// and it never starts with "-" or a digit, so Excel shows it as plain text when the admin opens the CSV.
+const LETTERS = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+const CHARS = LETTERS + "23456789";
+const makeTempPassword = () => {
+  let password = LETTERS[crypto.randomInt(LETTERS.length)];
+  for (let i = 1; i < 8; i++) password += CHARS[crypto.randomInt(CHARS.length)];
+  return password;
+};
 
 // Teachers and HODs both have a teacher profile
 const isStaff = (role) => role === "teacher" || role === "hod";
@@ -242,8 +251,9 @@ export const resetUserPassword = async (req, res) => {
 
 // POST /api/users/import
 // Adds a whole class at once. Body: { batch: <batch id>, students: [{ name, email, rollNumber, phone? }, ...] }
+// Each student can also send "row" (their row number in the file), used only to name rows in messages.
 // Every row is checked first. If any row has a problem, nobody is added and the problems come back
-// with their row index, so the admin can fix the file and try again.
+// with their index in the list, so the admin can fix the file and try again.
 const MAX_IMPORT = 300;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -262,6 +272,8 @@ export const importStudents = async (req, res) => {
     phone: String(s?.phone ?? "").trim(),
   }));
 
+  // The row number the admin sees in their file (falls back to the position in the list)
+  const rowName = (i) => (Number.isInteger(students[i]?.row) ? students[i].row : i + 1);
   const problems = [];
   const seenEmail = new Map();
   const seenRoll = new Map();
@@ -272,8 +284,8 @@ export const importStudents = async (req, res) => {
     if (!r.email) add("Email is missing");
     else if (!EMAIL.test(r.email)) add(`"${r.email}" is not a valid email`);
     if (!r.rollNumber) add("Roll number is missing");
-    if (r.email && seenEmail.has(r.email)) add(`Same email as row index ${seenEmail.get(r.email)}`);
-    if (r.rollNumber && seenRoll.has(r.rollNumber)) add(`Same roll number as row index ${seenRoll.get(r.rollNumber)}`);
+    if (r.email && seenEmail.has(r.email)) add(`Same email as row ${rowName(seenEmail.get(r.email))}`);
+    if (r.rollNumber && seenRoll.has(r.rollNumber)) add(`Same roll number as row ${rowName(seenRoll.get(r.rollNumber))}`);
     if (r.email && !seenEmail.has(r.email)) seenEmail.set(r.email, index);
     if (r.rollNumber && !seenRoll.has(r.rollNumber)) seenRoll.set(r.rollNumber, index);
   });
