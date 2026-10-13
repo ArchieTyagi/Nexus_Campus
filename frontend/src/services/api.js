@@ -11,6 +11,12 @@ export async function api(path, { method = 'GET', body, token } = {}) {
   })
 
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(data.message || 'Something went wrong')
+  if (!res.ok) {
+    // Keep the full reply on the error, for pages that need more than the message (like import problems)
+    const error = new Error(data.message || 'Something went wrong')
+    error.status = res.status
+    error.data = data
+    throw error
+  }
   return data
 }
