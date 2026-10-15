@@ -1377,3 +1377,86 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Import students from CSV */
+.import {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.import__help {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--amber-text);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.import input[type='file'] {
+  padding: 9px 10px;
+  font-size: 14px;
+}
+
+.import__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  font-size: 14px;
+}
+
+.import__bad {
+  color: var(--red);
+  font-style: normal;
+}
+
+.import__preview {
+  max-height: 380px;
+  overflow: auto;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.data-table--import {
+  min-width: 720px;
+}
+
+.data-table--import .data-table__row {
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+.data-table--import .data-table__row--head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: 12px;
+  background: var(--surface);
+}
+
+.data-table--import .data-table__row.is-problem {
+  background: #fdf1ef;
+}
+
+.import__cell {
+  overflow-wrap: anywhere;
+}
+
+.import__done {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
