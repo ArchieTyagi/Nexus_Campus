@@ -4,6 +4,7 @@ import Panel from '../../components/ui/Panel.jsx'
 import Icon from '../../components/ui/Icon.jsx'
 import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
+import ImportStudents from '../../components/users/ImportStudents.jsx'
 
 const ROLE_LABELS = {
   admin: 'Admin',
@@ -81,6 +82,15 @@ export default function UsersPage() {
           departments={departments}
           batches={batches}
           onAdded={() => setReload((n) => n + 1)}
+        />
+      </Panel>
+
+      <Panel title="Import a class" description="Add a whole batch of students at once from a CSV file.">
+        <ImportStudents
+          token={token}
+          departments={departments}
+          batches={batches}
+          onImported={() => setReload((n) => n + 1)}
         />
       </Panel>
 
