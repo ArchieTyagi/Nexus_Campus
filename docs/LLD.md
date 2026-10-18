@@ -4,6 +4,10 @@ This page goes into the details: database collections, how the code is split, an
 
 ## 1. Database schema
 
+![LLD: database schema](images/lld-database.png)
+
+Same diagram as code (editable):
+
 ```mermaid
 erDiagram
     USER ||--o| STUDENT : "has profile"
@@ -131,6 +135,8 @@ flowchart TD
 ```
 
 ## 4. Timetable clash check
+
+![LLD: request flow through the backend](images/lld-request-flow.png)
 
 Two classes clash when **all three** are true:
 

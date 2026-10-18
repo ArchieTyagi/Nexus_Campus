@@ -2,6 +2,8 @@
 
 This page shows the big picture: the parts of Nexus Campus and how they talk to each other.
 
+![HLD: system architecture](images/hld-architecture.png)
+
 ## 1. System overview
 
 Three types of users open the same React app in their browser. The app calls our Express API, which reads and writes MongoDB.

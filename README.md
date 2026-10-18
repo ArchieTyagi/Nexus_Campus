@@ -33,6 +33,26 @@ Nexus Campus gives every person a login and a dashboard with only what they need
 | View students in a batch | Yes | Yes | No |
 | Change own password | Yes | Yes | Yes |
 
+## Architecture
+
+### High level design (HLD)
+
+How users, the frontend, the three backend parts and the database connect, with the folders behind each part.
+
+![HLD: system architecture](docs/images/hld-architecture.png)
+
+### Low level design (LLD)
+
+**Database:** every MongoDB collection, its fields and how they link.
+
+![LLD: database schema](docs/images/lld-database.png)
+
+**Request flow:** what happens inside the backend when an admin adds a class to the timetable, including every check and error.
+
+![LLD: request flow through the backend](docs/images/lld-request-flow.png)
+
+More detail in [docs/HLD.md](docs/HLD.md) and [docs/LLD.md](docs/LLD.md).
+
 ## Tech stack
 
 | Part | Tech |
@@ -62,7 +82,8 @@ Nexus_Campus/
 │   └── .env.example
 └── docs/
     ├── HLD.md             high level design
-    └── LLD.md             low level design
+    ├── LLD.md             low level design
+    └── images/            diagram images
 ```
 
 ## Getting started
