@@ -146,10 +146,7 @@ All routes start with `/api`. Everything except login needs the header `Authoriz
 - [ ] Frontend pages and dashboards
 - [ ] Pilot with one batch
 
-## Team
-
 - Archi Tyagi
-- Piyush Thakkar
 
 ## License
 
