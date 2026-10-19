@@ -239,3 +239,79 @@
   font-weight: 600;
   text-align: center;
 }
+
+/* HOD: attendance by batch */
+.batch-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.batch-chart__row {
+  display: grid;
+  grid-template-columns: minmax(130px, 190px) minmax(0, 1fr) 52px;
+  gap: 16px;
+  align-items: center;
+  font-size: 15px;
+}
+
+.batch-chart__detail {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.batch-chart__track {
+  position: relative;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--soft-2);
+}
+
+.batch-chart__bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 8px;
+  background: var(--bar);
+}
+
+.batch-chart__bar.is-low {
+  background: var(--red);
+}
+
+.batch-chart__line {
+  position: absolute;
+  left: 75%;
+  top: -6px;
+  bottom: -6px;
+  border-left: 2px dashed var(--red);
+}
+
+.batch-chart__value {
+  text-align: right;
+  font-size: 16px;
+}
+
+/* HOD: faculty load */
+.load-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.load-item__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.load-item__note {
+  margin-top: 5px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.load-item .meter__track {
+  overflow: hidden;
+}

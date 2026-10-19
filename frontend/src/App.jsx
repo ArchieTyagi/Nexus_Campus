@@ -2,11 +2,12 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import DashboardLayout from './components/layout/DashboardLayout.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
+import HodDashboard from './pages/HodDashboard.jsx'
 
 // Until login is connected, each role's dashboard has its own URL
 const dashboards = {
   admin: <AdminDashboard />,
-  hod: <ComingSoon />,
+  hod: <HodDashboard />,
   teacher: <ComingSoon />,
   student: <ComingSoon />,
 }
