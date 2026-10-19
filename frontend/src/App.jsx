@@ -4,13 +4,14 @@ import ComingSoon from './pages/ComingSoon.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import HodDashboard from './pages/HodDashboard.jsx'
 import TeacherDashboard from './pages/TeacherDashboard.jsx'
+import StudentDashboard from './pages/StudentDashboard.jsx'
 
 // Until login is connected, each role's dashboard has its own URL
 const dashboards = {
   admin: <AdminDashboard />,
   hod: <HodDashboard />,
   teacher: <TeacherDashboard />,
-  student: <ComingSoon />,
+  student: <StudentDashboard />,
 }
 
 export default function App() {
