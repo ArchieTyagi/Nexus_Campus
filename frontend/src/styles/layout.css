@@ -409,3 +409,8 @@
     padding: 22px 20px;
   }
 }
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

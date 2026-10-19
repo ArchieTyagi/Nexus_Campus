@@ -3,12 +3,13 @@ import DashboardLayout from './components/layout/DashboardLayout.jsx'
 import ComingSoon from './pages/ComingSoon.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import HodDashboard from './pages/HodDashboard.jsx'
+import TeacherDashboard from './pages/TeacherDashboard.jsx'
 
 // Until login is connected, each role's dashboard has its own URL
 const dashboards = {
   admin: <AdminDashboard />,
   hod: <HodDashboard />,
-  teacher: <ComingSoon />,
+  teacher: <TeacherDashboard />,
   student: <ComingSoon />,
 }
 

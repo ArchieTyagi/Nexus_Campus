@@ -315,3 +315,208 @@
 .load-item .meter__track {
   overflow: hidden;
 }
+
+/* Day timeline (teacher and student) */
+.timeline {
+  overflow-x: auto;
+}
+
+.timeline__track {
+  position: relative;
+  min-width: 760px;
+  height: 132px;
+}
+
+.timeline__rail {
+  position: absolute;
+  inset: 28px 0 auto;
+  height: 76px;
+  border-radius: 12px;
+  background: var(--soft);
+}
+
+.timeline__block {
+  position: absolute;
+  top: 32px;
+  height: 68px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.timeline__block.is-done {
+  background: #ededf0;
+  color: var(--ink-2);
+}
+
+.timeline__block.is-now {
+  background: var(--amber);
+  border-color: var(--amber-border);
+  color: var(--amber-ink);
+}
+
+.timeline__block.is-next {
+  background: var(--surface);
+  border-color: var(--field-line);
+  color: var(--ink);
+}
+
+.timeline__block.is-break {
+  background: repeating-linear-gradient(135deg, var(--soft-2) 0 6px, #eaeaec 6px 12px);
+  border-color: #eaeaec;
+  color: var(--ink-2);
+}
+
+.timeline__small,
+.timeline__title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeline__small {
+  font-size: 12.5px;
+}
+
+.timeline__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.timeline__now {
+  position: absolute;
+  top: 0;
+  height: 112px;
+  width: 2px;
+  background: var(--red);
+}
+
+.timeline__now-label {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.timeline__tick {
+  position: absolute;
+  top: 112px;
+  transform: translateX(-50%);
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.timeline__tick.is-first {
+  transform: none;
+}
+
+.timeline__tick.is-last {
+  transform: translateX(-100%);
+}
+
+/* Teacher: the class happening right now */
+.live-class {
+  background: #18181b;
+  border: 1px solid #2c2c31;
+  color: #fafafa;
+  border-radius: var(--radius-lg);
+  padding: 26px 28px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.live-class__pill {
+  background: var(--sidebar-active);
+  color: var(--amber);
+}
+
+.live-class__title {
+  margin: 12px 0 6px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 28px;
+}
+
+.live-class__meta {
+  font-size: 15px;
+  color: #b4b4bc;
+}
+
+.btn--large {
+  height: 54px;
+  padding: 0 26px;
+  font-size: 16px;
+}
+
+.person-avatar {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--soft-2);
+  color: var(--bar);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.align-right {
+  text-align: right;
+}
+
+/* Forms */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field input,
+.field select,
+.field textarea {
+  padding: 0 12px;
+  border: 1px solid var(--field-line);
+  border-radius: 12px;
+  background: var(--soft);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.field input,
+.field select {
+  height: 46px;
+}
+
+.field textarea {
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
