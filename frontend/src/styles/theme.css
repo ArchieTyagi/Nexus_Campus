@@ -1,0 +1,90 @@
+/* Colours follow the college LMS: dark shell, white panels, amber for what matters */
+:root {
+  --bg: #0b0b0c;
+  --sidebar: #111113;
+  --sidebar-line: #1f1f23;
+  --sidebar-text: #c4c4cc;
+  --sidebar-muted: #8e8e97;
+  --sidebar-active: #2a1e0e;
+
+  --amber: #f5a524;
+  --amber-border: #e0921a;
+  --amber-ink: #1c1407;
+  --amber-text: #a15c07;
+  --amber-tint: #fef3dc;
+  --amber-tint-text: #8a4b05;
+
+  --surface: #ffffff;
+  --soft: #f7f7f8;
+  --soft-2: #f4f4f5;
+  --track: #f0f0f2;
+  --ink: #18181b;
+  --ink-2: #52525b;
+  --bar: #3f3f46;
+  --line: #e4e4e7;
+  --hairline: #efeff1;
+  --field-line: #d4d4d8;
+  --red: #b42318;
+
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque', var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: var(--amber-text);
+}
+
+a:hover {
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
