@@ -1,0 +1,241 @@
+/* Building blocks shared by the role dashboards */
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1 1 320px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.column--wide {
+  flex: 2 1 560px;
+}
+
+/* Rows separated by a hairline */
+.list-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.list-row__body {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.list-row__title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.list-row__meta {
+  margin-top: 2px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.severity {
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.severity--high {
+  background: var(--red);
+}
+
+.severity--mid {
+  background: var(--amber);
+}
+
+.severity--low {
+  background: #a1a1aa;
+}
+
+/* Grid based tables that scroll sideways on phones */
+.table-scroll {
+  overflow-x: auto;
+}
+
+.data-table {
+  min-width: 620px;
+}
+
+.data-table__row {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 15px;
+}
+
+.data-table__row--head {
+  padding: 0 0 10px;
+  border-bottom-color: var(--line);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.strong {
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.text-red {
+  color: var(--red);
+  font-weight: 600;
+}
+
+/* Horizontal bar with a 75% marker */
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meter__track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--track);
+}
+
+.meter__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 4px;
+  background: var(--bar);
+}
+
+.meter__fill.is-low {
+  background: var(--red);
+}
+
+.meter__fill.is-amber {
+  background: var(--amber);
+}
+
+.meter__mark {
+  position: absolute;
+  left: 75%;
+  top: -4px;
+  width: 2px;
+  height: 16px;
+  background: var(--ink);
+  opacity: 0.4;
+}
+
+.meter__value {
+  flex: 0 0 44px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.legend__tick {
+  width: 2px;
+  height: 14px;
+  background: var(--ink);
+  opacity: 0.4;
+}
+
+.legend__dash {
+  width: 18px;
+  border-top: 2px dashed var(--red);
+}
+
+/* Quick actions grid */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.action-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 100px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.action-tile:hover {
+  border-color: var(--field-line);
+  background: var(--soft-2);
+}
+
+.action-tile__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pill--amber {
+  background: var(--amber-tint);
+  color: var(--amber-tint-text);
+}
+
+.pill__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.tag {
+  flex: 0 0 auto;
+  min-width: 58px;
+  padding: 5px 8px;
+  border-radius: 9px;
+  background: var(--soft-2);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
