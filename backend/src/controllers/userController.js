@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import Student from "../models/Student.js";
 import Teacher from "../models/Teacher.js";
@@ -237,4 +238,97 @@ export const resetUserPassword = async (req, res) => {
   user.mustChangePassword = true;
   await user.save();
   res.json({ message: "Password reset", tempPassword: password });
+};
+
+// POST /api/users/import
+// Adds a whole class at once. Body: { batch: <batch id>, students: [{ name, email, rollNumber, phone? }, ...] }
+// Every row is checked first. If any row has a problem, nobody is added and the problems come back
+// with their row index, so the admin can fix the file and try again.
+const MAX_IMPORT = 300;
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const importStudents = async (req, res) => {
+  const { batch: batchId, students } = req.body;
+  if (!Array.isArray(students) || students.length === 0) throw new AppError("The file has no students in it");
+  if (students.length > MAX_IMPORT) throw new AppError(`You can add up to ${MAX_IMPORT} students at a time`);
+  const batch = await Batch.findById(batchId).populate("department", "name code");
+  if (!batch) throw new AppError("Batch not found", 404);
+
+  // Clean up each row the same way the database would store it
+  const rows = students.map((s) => ({
+    name: String(s?.name ?? "").trim(),
+    email: String(s?.email ?? "").trim().toLowerCase(),
+    rollNumber: String(s?.rollNumber ?? "").trim().toUpperCase(),
+    phone: String(s?.phone ?? "").trim(),
+  }));
+
+  const problems = [];
+  const seenEmail = new Map();
+  const seenRoll = new Map();
+  rows.forEach((r, index) => {
+    const add = (message) => problems.push({ index, message });
+    if (!r.name) add("Name is missing");
+    else if (r.name.length > 100) add("Name is longer than 100 characters");
+    if (!r.email) add("Email is missing");
+    else if (!EMAIL.test(r.email)) add(`"${r.email}" is not a valid email`);
+    if (!r.rollNumber) add("Roll number is missing");
+    if (r.email && seenEmail.has(r.email)) add(`Same email as row index ${seenEmail.get(r.email)}`);
+    if (r.rollNumber && seenRoll.has(r.rollNumber)) add(`Same roll number as row index ${seenRoll.get(r.rollNumber)}`);
+    if (r.email && !seenEmail.has(r.email)) seenEmail.set(r.email, index);
+    if (r.rollNumber && !seenRoll.has(r.rollNumber)) seenRoll.set(r.rollNumber, index);
+  });
+
+  // People who are already in the system
+  const [takenEmails, takenRolls] = await Promise.all([
+    User.find({ email: { $in: [...seenEmail.keys()] } }).select("email"),
+    Student.find({ rollNumber: { $in: [...seenRoll.keys()] } }).select("rollNumber"),
+  ]);
+  for (const u of takenEmails) problems.push({ index: seenEmail.get(u.email), message: `${u.email} is already registered` });
+  for (const s of takenRolls) {
+    problems.push({ index: seenRoll.get(s.rollNumber), message: `Roll number ${s.rollNumber} is already registered` });
+  }
+
+  if (problems.length > 0) {
+    problems.sort((a, b) => a.index - b.index);
+    return res.status(400).json({ message: "Nobody was added. Fix these rows and try again.", problems });
+  }
+
+  // Each student gets their own temporary password, hashed before saving.
+  // Cost 8 instead of the usual 10 keeps a big class fast (about 4 times quicker). That is safe here
+  // because these passwords are random, only used once, and get re-hashed at cost 10 when the student changes it.
+  const passwords = rows.map(() => makeTempPassword());
+  const hashes = await Promise.all(passwords.map((pw) => bcrypt.hash(pw, 8)));
+
+  let users = [];
+  try {
+    users = await User.insertMany(
+      rows.map((r, i) => ({
+        name: r.name,
+        email: r.email,
+        phone: r.phone || undefined,
+        role: "student",
+        password: hashes[i],
+      }))
+    );
+    await Student.insertMany(
+      rows.map((r, i) => ({
+        user: users[i]._id,
+        rollNumber: r.rollNumber,
+        department: batch.department._id,
+        batch: batch._id,
+      }))
+    );
+  } catch (err) {
+    // Undo everything, so a half-added class never stays behind
+    const ids = users.map((u) => u._id);
+    await Promise.all([User.deleteMany({ _id: { $in: ids } }), Student.deleteMany({ user: { $in: ids } })]);
+    throw err;
+  }
+
+  res.status(201).json({
+    added: rows.length,
+    batch: { _id: batch._id, name: batch.name, department: batch.department },
+    // Shown once so the admin can share them. Each student must change theirs on first login.
+    students: rows.map((r, i) => ({ name: r.name, email: r.email, rollNumber: r.rollNumber, tempPassword: passwords[i] })),
+  });
 };
