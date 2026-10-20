@@ -39,6 +39,15 @@ export default function AuthProvider({ children }) {
     return data.user
   }
 
+  // After changing the password the server sends a fresh token and the updated user
+  function updateSession({ token: nextToken, user: nextUser }) {
+    if (nextToken) {
+      localStorage.setItem(TOKEN_KEY, nextToken)
+      setToken(nextToken)
+    }
+    if (nextUser) setUser(nextUser)
+  }
+
   function logout() {
     localStorage.removeItem(TOKEN_KEY)
     setToken(null)
@@ -47,7 +56,7 @@ export default function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, profile, loading, login, logout }}>
+    <AuthContext.Provider value={{ token, user, profile, loading, login, logout, updateSession }}>
       {children}
     </AuthContext.Provider>
   )
