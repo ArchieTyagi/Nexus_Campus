@@ -23,6 +23,7 @@ const paths = {
   briefcase: 'M4 8h16v11H4zM9 8V5h6v3M4 13h16',
   video: 'M4 7h11v10H4zM15 10.5l5-3v9l-5-3',
   send: 'M21 3L3 10.5l7 2.5 2.5 7zM10 13l11-10',
+  key: 'M14 10a4 4 0 1 0-3.5 4l1.5 1.5h2v2h2v2h3v-3l-5.1-5.1A4 4 0 0 0 14 10M15.5 8.5h.01',
   logout: 'M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10',
   expand: 'M4 4h16v16H4zM9 4v16M13 10l2 2-2 2',
 }
