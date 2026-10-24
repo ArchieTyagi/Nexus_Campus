@@ -7,6 +7,7 @@ import './styles/layout.css'
 import './styles/dashboard.css'
 import './styles/login.css'
 import './styles/admin.css'
+import './styles/account.css'
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(

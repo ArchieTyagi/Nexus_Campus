@@ -1,12 +1,15 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import Icon from '../ui/Icon.jsx'
 import Logo from '../ui/Logo.jsx'
+import ChangePasswordDialog from '../auth/ChangePasswordDialog.jsx'
 import { navigation } from '../../config/navigation.js'
 import { useAuth } from '../../context/useAuth.js'
 
 export default function Sidebar({ role, collapsed, onToggle }) {
   const { label, groups } = navigation[role]
   const { logout } = useAuth()
+  const [changingPassword, setChangingPassword] = useState(false)
 
   return (
     <nav className={`sidebar ${collapsed ? 'is-collapsed' : ''}`} aria-label="Main">
@@ -50,6 +53,15 @@ export default function Sidebar({ role, collapsed, onToggle }) {
         <button
           type="button"
           className="sidebar__button"
+          onClick={() => setChangingPassword(true)}
+          title={collapsed ? 'Change password' : undefined}
+        >
+          <Icon name="key" />
+          <span className="sidebar__text">Change password</span>
+        </button>
+        <button
+          type="button"
+          className="sidebar__button"
           onClick={logout}
           title={collapsed ? 'Log out' : undefined}
         >
@@ -57,6 +69,7 @@ export default function Sidebar({ role, collapsed, onToggle }) {
           <span className="sidebar__text">Log out</span>
         </button>
       </div>
+      {changingPassword && <ChangePasswordDialog onClose={() => setChangingPassword(false)} />}
     </nav>
   )
 }
