@@ -41,6 +41,9 @@ export const changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   if (!currentPassword || !newPassword) throw new AppError("Both passwords are required");
   if (newPassword.length < 8) throw new AppError("New password must be at least 8 characters");
+  // bcrypt only uses the first 72 bytes, so a longer password would be cut off without anyone knowing
+  if (Buffer.byteLength(newPassword) > 72) throw new AppError("New password must be at most 72 characters");
+  if (newPassword === currentPassword) throw new AppError("New password must be different from the current one");
 
   const user = await User.findById(req.user._id).select("+password");
   if (!(await user.checkPassword(currentPassword))) throw new AppError("Current password is wrong", 401);
@@ -48,5 +51,6 @@ export const changePassword = async (req, res) => {
   user.password = newPassword;
   user.mustChangePassword = false;
   await user.save();
-  res.json({ message: "Password changed", token: createToken(user) });
+  user.password = undefined;
+  res.json({ message: "Password changed", token: createToken(user), user });
 };

@@ -20,6 +20,12 @@ export const protect = async (req, res, next) => {
     const user = await User.findById(data.id);
     if (!user || !user.isActive) throw new AppError("Account not found or deactivated", 401);
 
+    // Someone with a temporary password must set their own before using anything else.
+    // Only the /api/auth routes (me, change-password) stay open for them.
+    if (user.mustChangePassword && !req.originalUrl.startsWith("/api/auth/")) {
+      throw new AppError("Please change your temporary password first", 403);
+    }
+
     req.user = user;
     next();
   } catch (err) {
