@@ -1275,3 +1275,105 @@
   font-size: 13px;
   font-weight: 400;
 }
+
+/* Timetable */
+.week {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(150px, 1fr));
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.week__day {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 150px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: var(--soft);
+}
+
+.week__day.is-today {
+  outline: 2px solid var(--amber);
+  background: var(--amber-tint);
+}
+
+.week__name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.week__today {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--amber);
+  color: var(--amber-ink);
+  font-size: 11px;
+}
+
+.week__empty {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.slot.is-selected {
+  border-color: var(--amber-border);
+  box-shadow: 0 0 0 2px var(--amber);
+}
+
+.slot__time {
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.slot__code {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.slot__name {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.slot__meta {
+  color: var(--ink-2);
+  font-size: 12px;
+}
+
+.slot__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.link-button--quiet {
+  color: var(--ink-2);
+}
+
+.link-button--danger {
+  color: var(--red);
+}
+
+@media (max-width: 760px) {
+  .week {
+    grid-template-columns: 1fr;
+  }
+}
