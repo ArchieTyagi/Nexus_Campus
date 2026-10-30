@@ -28,6 +28,8 @@ import SessionsAdminPage from './pages/admin/SessionsAdminPage.jsx'
 import InternshipsAdminPage from './pages/admin/InternshipsAdminPage.jsx'
 import BatchStudentsPage from './pages/batch/BatchStudentsPage.jsx'
 import BatchDashboardPage from './pages/batch/BatchDashboardPage.jsx'
+import TimetableAdminPage from './pages/admin/TimetableAdminPage.jsx'
+import TimetablePage from './pages/student/TimetablePage.jsx'
 
 // Which roles can open each dashboard.
 // HOD is not a backend role yet, so admin can open it for now.
@@ -40,6 +42,7 @@ const dashboards = [
       { path: 'departments', element: <DepartmentsPage /> },
       { path: 'users', element: <UsersPage /> },
       { path: 'courses', element: <CoursesPage /> },
+      { path: 'timetable', element: <TimetableAdminPage /> },
       { path: 'activities', element: <ImpactReviewPage /> },
       { path: 'notices', element: <NoticesAdminPage /> },
       { path: 'materials', element: <MaterialsAdminPage /> },
@@ -73,7 +76,10 @@ const dashboards = [
     path: 'teacher',
     page: <TeacherDashboard />,
     allow: ['teacher'],
-    pages: [{ path: 'attendance', element: <TakeAttendancePage /> }],
+    pages: [
+      { path: 'attendance', element: <TakeAttendancePage /> },
+      { path: 'timetable', element: <TimetablePage /> },
+    ],
   },
   {
     path: 'student',
@@ -85,6 +91,7 @@ const dashboards = [
       { path: 'materials', element: <MaterialsPage /> },
       { path: 'attendance', element: <AttendancePage /> },
       { path: 'ojt', element: <OjtPage /> },
+      { path: 'timetable', element: <TimetablePage /> },
       { path: 'sessions', element: <SessionsPage /> },
       { path: 'internships', element: <InternshipsPage /> },
     ],
