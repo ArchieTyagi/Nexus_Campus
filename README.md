@@ -1,12 +1,11 @@
 # Nexus Campus
-
 A college management web app where admins, teachers and students handle daily academic work in one place: users, courses, timetables, attendance and notices.
 
 Built as our OJT project, and meant to actually be used by the college.
 
 ## Why
 
-Right now this info lives in registers, Excel sheets, WhatsApp groups and notice boards. Students miss notices, attendance problems show up too late, and admins spend hours on manual updates.
+Right now this info lives in registers, Excel sheets, WhatsApp groups and notice boards and many apps and websites for daily work . Students miss notices, attendance problems show up too late, and admins spend hours on manual updates.
 
 Nexus Campus gives every person a login and a dashboard with only what they need.
 
