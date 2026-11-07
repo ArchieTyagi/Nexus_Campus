@@ -1,25 +1,12 @@
 import { NavLink } from 'react-router-dom'
 import Icon from '../ui/Icon.jsx'
+import Logo from '../ui/Logo.jsx'
 import { navigation } from '../../config/navigation.js'
-
-function Logo() {
-  return (
-    <svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true">
-      <rect x="1" y="1" width="30" height="30" rx="9" fill="var(--amber)" />
-      <path
-        d="M10 22V10l12 12V10"
-        fill="none"
-        stroke="var(--amber-ink)"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
+import { useAuth } from '../../context/useAuth.js'
 
 export default function Sidebar({ role, collapsed, onToggle }) {
   const { label, groups } = navigation[role]
+  const { logout } = useAuth()
 
   return (
     <nav className={`sidebar ${collapsed ? 'is-collapsed' : ''}`} aria-label="Main">
@@ -59,6 +46,15 @@ export default function Sidebar({ role, collapsed, onToggle }) {
         >
           <Icon name={collapsed ? 'expand' : 'collapse'} />
           <span className="sidebar__text">Collapse</span>
+        </button>
+        <button
+          type="button"
+          className="sidebar__button"
+          onClick={logout}
+          title={collapsed ? 'Log out' : undefined}
+        >
+          <Icon name="logout" />
+          <span className="sidebar__text">Log out</span>
         </button>
       </div>
     </nav>

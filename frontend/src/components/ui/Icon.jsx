@@ -18,6 +18,7 @@ const paths = {
   search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14M20 20l-4-4',
   plus: 'M12 5v14M5 12h14',
   collapse: 'M4 4h16v16H4zM9 4v16M15 10l-2 2 2 2',
+  logout: 'M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10',
   expand: 'M4 4h16v16H4zM9 4v16M13 10l2 2-2 2',
 }
 
