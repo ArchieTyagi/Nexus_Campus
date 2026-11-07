@@ -28,7 +28,7 @@ erDiagram
         string name
         string email "unique"
         string password "bcrypt hash, hidden"
-        string role "admin | teacher | student"
+        string role "admin | hod | teacher | student"
         string phone
         boolean isActive
         boolean mustChangePassword

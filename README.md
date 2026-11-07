@@ -13,7 +13,7 @@ Nexus Campus gives every person a login and a dashboard with only what they need
 
 | Module | Status | What it does |
 | --- | --- | --- |
-| Login and roles | Done | Login with email or roll number. Three roles: admin, teacher, student |
+| Login and roles | Done | Login with email or roll number. Four roles: admin, HOD, teacher, student |
 | Users | Done | Admin adds students and teachers, searches and filters, deactivates accounts |
 | Departments and batches | Done | Admin creates departments (CSE, AI/ML) and batches (2025-2029 Sec A) |
 | Courses | Done | Admin creates courses for a batch and assigns a teacher |
@@ -24,13 +24,16 @@ Nexus Campus gives every person a login and a dashboard with only what they need
 
 ### Who can do what
 
-| Action | Admin | Teacher | Student |
-| --- | --- | --- | --- |
-| Manage users, departments, batches | Yes | No | No |
-| Create courses and timetable | Yes | No | No |
-| View courses and timetable | All | Own classes | Own batch |
-| View students in a batch | Yes | Yes | No |
-| Change own password | Yes | Yes | Yes |
+| Action | Admin | HOD | Teacher | Student |
+| --- | --- | --- | --- | --- |
+| Manage users, departments, batches | Yes | No | No | No |
+| Create courses and timetable | Yes | No | No | No |
+| View courses and timetable | All | Own department | Own classes | Own batch |
+| View people list | All | Own department | No | No |
+| View students in a batch | Yes | Yes | Yes | No |
+| Change own password | Yes | Yes | Yes | Yes |
+
+An HOD is a teacher who also looks after one department, so they keep their teacher profile. Each department can have only one HOD. Admin makes a teacher the HOD by changing their role to `hod`.
 
 ## Architecture
 
@@ -138,13 +141,13 @@ All routes start with `/api`. Everything except login needs the header `Authoriz
 | POST | `/auth/login` | Everyone | Log in with `{ login, password }`, get a token |
 | GET | `/auth/me` | Logged in | Current user and profile |
 | POST | `/auth/change-password` | Logged in | Change own password |
-| GET | `/users` | Admin | List users. Filters: `role`, `department`, `batch`, `search`, `page` |
-| POST | `/users` | Admin | Create admin, teacher or student |
-| GET, PATCH | `/users/:id` | Admin | View or edit a user |
+| GET | `/users` | Admin, HOD (own department) | List users. Filters: `role`, `department`, `batch`, `search`, `page` |
+| POST | `/users` | Admin | Create admin, HOD, teacher or student |
+| GET, PATCH | `/users/:id` | Admin | View or edit a user (role can switch between teacher and hod) |
 | POST | `/users/:id/reset-password` | Admin | Give a user a new temporary password |
 | GET, POST, PATCH | `/departments` | GET: all, rest: admin | Manage departments |
 | GET, POST, PATCH | `/batches` | GET: all, rest: admin | Manage batches |
-| GET | `/batches/:id/students` | Admin, teacher | Students in a batch |
+| GET | `/batches/:id/students` | Admin, HOD, teacher | Students in a batch |
 | GET | `/courses` | Logged in | Courses (filtered by role) |
 | POST, PATCH, DELETE | `/courses/:id` | Admin | Manage courses |
 | GET | `/timetable` | Logged in | Weekly timetable (filtered by role) |

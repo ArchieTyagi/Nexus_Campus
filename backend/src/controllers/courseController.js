@@ -3,7 +3,7 @@ import Batch from "../models/Batch.js";
 import Teacher from "../models/Teacher.js";
 import TimetableSlot from "../models/TimetableSlot.js";
 import AppError from "../utils/AppError.js";
-import { viewerScope } from "../utils/viewer.js";
+import { viewerScope, pickBatch } from "../utils/viewer.js";
 
 const withDetails = (query) =>
   query
@@ -23,13 +23,13 @@ const checkLinks = async ({ department, batch, teacher }) => {
 };
 
 // GET /api/courses?batch=<id>&teacher=<id>&semester=3
-// Students only see their batch's courses, teachers only their own.
+// Students only see their batch's courses, teachers only their own, HOD their department's.
 export const listCourses = async (req, res) => {
   const filter = await viewerScope(req.user);
-  if (req.user.role === "admin") {
-    if (req.query.batch) filter.batch = req.query.batch;
+  if (req.user.role === "admin" || req.user.role === "hod") {
+    if (req.query.batch) filter.batch = pickBatch(filter.batch, req.query.batch);
     if (req.query.teacher) filter.teacher = req.query.teacher;
-    if (req.query.department) filter.department = req.query.department;
+    if (req.query.department && req.user.role === "admin") filter.department = req.query.department;
   }
   if (req.query.semester) filter.semester = Number(req.query.semester);
   res.json(await withDetails(Course.find(filter).sort({ semester: 1, code: 1 })));

@@ -51,7 +51,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     AUTH[Auth<br/>login, change password]
-    USERS[Users<br/>admin, teacher, student]
+    USERS[Users<br/>admin, HOD, teacher, student]
     ORG[Departments and batches]
     COURSES[Courses]
     TT[Timetable<br/>clash checking]

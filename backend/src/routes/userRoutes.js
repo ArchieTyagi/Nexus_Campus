@@ -4,13 +4,13 @@ import { protect, allow } from "../middleware/auth.js";
 
 const router = Router();
 
-// Every route here is admin only
-router.use(protect, allow("admin"));
+router.use(protect);
 
-router.get("/", listUsers);
-router.post("/", createUser);
-router.get("/:id", getUser);
-router.patch("/:id", updateUser);
-router.post("/:id/reset-password", resetUserPassword);
+// HOD can list people in their own department. Everything else is admin only.
+router.get("/", allow("admin", "hod"), listUsers);
+router.post("/", allow("admin"), createUser);
+router.get("/:id", allow("admin"), getUser);
+router.patch("/:id", allow("admin"), updateUser);
+router.post("/:id/reset-password", allow("admin"), resetUserPassword);
 
 export default router;

@@ -1,7 +1,7 @@
 import TimetableSlot, { DAYS } from "../models/TimetableSlot.js";
 import Course from "../models/Course.js";
 import AppError from "../utils/AppError.js";
-import { viewerScope } from "../utils/viewer.js";
+import { viewerScope, pickBatch } from "../utils/viewer.js";
 
 const withDetails = (query) =>
   query
@@ -43,11 +43,11 @@ const checkSlot = async (data, ignoreId) => {
 };
 
 // GET /api/timetable?batch=<id>&teacher=<id>&day=Mon
-// Students get their batch's week, teachers get their own classes.
+// Students get their batch's week, teachers their own classes, HOD their department.
 export const getTimetable = async (req, res) => {
   const filter = await viewerScope(req.user);
-  if (req.user.role === "admin") {
-    if (req.query.batch) filter.batch = req.query.batch;
+  if (req.user.role === "admin" || req.user.role === "hod") {
+    if (req.query.batch) filter.batch = pickBatch(filter.batch, req.query.batch);
     if (req.query.teacher) filter.teacher = req.query.teacher;
   }
   if (req.query.day) filter.day = req.query.day;

@@ -6,17 +6,35 @@ import Batch from "../models/Batch.js";
 import Department from "../models/Department.js";
 import AppError from "../utils/AppError.js";
 import { getProfile } from "../utils/profile.js";
+import { hodDepartment } from "../utils/viewer.js";
 
 const makeTempPassword = () => crypto.randomBytes(6).toString("base64url"); // 8 characters
 
+// Teachers and HODs both have a teacher profile
+const isStaff = (role) => role === "teacher" || role === "hod";
+
+// A department can have only one active HOD
+const checkOneHod = async (department, ignoreUserId) => {
+  const hods = await User.find({ role: "hod", isActive: true, _id: { $ne: ignoreUserId } }).select("_id");
+  const taken = await Teacher.exists({ department, user: { $in: hods.map((h) => h._id) } });
+  if (taken) throw new AppError("This department already has an HOD", 409);
+};
+
 // GET /api/users?role=student&department=<id>&batch=<id>&search=piyush&page=1
 export const listUsers = async (req, res) => {
-  const { role, department, batch, search, active } = req.query;
+  const { role, batch, search, active } = req.query;
+  let { department } = req.query;
   const page = Math.max(Number(req.query.page) || 1, 1);
   const limit = Math.min(Number(req.query.limit) || 20, 100);
 
   const filter = {};
   if (role) filter.role = role;
+
+  // An HOD only sees teachers and students of their own department
+  if (req.user.role === "hod") {
+    department = await hodDepartment(req.user);
+    if (role === "admin") return res.json({ users: [], total: 0, page, pages: 0 });
+  }
   if (active === "true" || active === "false") filter.isActive = active === "true";
 
   // Filter by department / batch through the student and teacher profiles
@@ -25,7 +43,7 @@ export const listUsers = async (req, res) => {
     if (department) where.department = department;
     if (batch) where.batch = batch;
     const students = await Student.find(where).select("user");
-    const teachers = batch ? [] : await Teacher.find({ department }).select("user");
+    const teachers = batch ? [] : await Teacher.find(department ? { department } : {}).select("user");
     filter._id = { $in: [...students, ...teachers].map((p) => p.user) };
   }
 
@@ -56,10 +74,13 @@ export const getUser = async (req, res) => {
 // POST /api/users
 // Student: { name, email, role: "student", rollNumber, department, batch, phone?, password? }
 // Teacher: { name, email, role: "teacher", employeeId, department, phone?, password? }
+// HOD:     same as teacher, with role: "hod" (one per department)
 // Admin:   { name, email, role: "admin", phone?, password? }
 export const createUser = async (req, res) => {
   const { name, email, role, phone, rollNumber, employeeId, department, batch } = req.body;
-  if (!["admin", "teacher", "student"].includes(role)) throw new AppError("Role must be admin, teacher or student");
+  if (!["admin", "hod", "teacher", "student"].includes(role)) {
+    throw new AppError("Role must be admin, hod, teacher or student");
+  }
 
   // Check the profile details before creating anything
   if (role === "student") {
@@ -68,9 +89,10 @@ export const createUser = async (req, res) => {
     if (!b) throw new AppError("Batch not found", 404);
     if (String(b.department) !== String(department)) throw new AppError("This batch is not in that department");
   }
-  if (role === "teacher") {
-    if (!employeeId || !department) throw new AppError("Teachers need employeeId and department");
+  if (isStaff(role)) {
+    if (!employeeId || !department) throw new AppError("Teachers and HODs need employeeId and department");
     if (!(await Department.exists({ _id: department }))) throw new AppError("Department not found", 404);
+    if (role === "hod") await checkOneHod(department);
   }
 
   const password = req.body.password || makeTempPassword();
@@ -79,7 +101,7 @@ export const createUser = async (req, res) => {
   // If the profile fails (for example, duplicate roll number), remove the user too
   try {
     if (role === "student") await Student.create({ user: user._id, rollNumber, department, batch });
-    if (role === "teacher") await Teacher.create({ user: user._id, employeeId, department });
+    if (isStaff(role)) await Teacher.create({ user: user._id, employeeId, department });
   } catch (err) {
     await User.findByIdAndDelete(user._id);
     throw err;
@@ -95,11 +117,25 @@ export const createUser = async (req, res) => {
 
 // PATCH /api/users/:id
 // Admin can change: name, phone, isActive, and profile fields (rollNumber, employeeId, department, batch)
+// role can switch between "teacher" and "hod" (to make a teacher the HOD, or undo it)
 export const updateUser = async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) throw new AppError("User not found", 404);
 
-  const { name, phone, email, isActive, rollNumber, employeeId, department, batch } = req.body;
+  const { name, phone, email, isActive, rollNumber, employeeId, department, batch, role } = req.body;
+
+  if (role !== undefined && role !== user.role) {
+    if (!isStaff(user.role) || !isStaff(role)) throw new AppError("Role can only switch between teacher and hod");
+    user.role = role;
+  }
+
+  // Check the one-HOD rule before saving anything
+  if (user.role === "hod") {
+    const teacher = await Teacher.findOne({ user: user._id });
+    const willBeActive = isActive !== undefined ? isActive : user.isActive;
+    if (willBeActive) await checkOneHod(department ?? teacher.department, user._id);
+  }
+
   if (name !== undefined) user.name = name;
   if (phone !== undefined) user.phone = phone;
   if (email !== undefined) user.email = email;
@@ -118,7 +154,7 @@ export const updateUser = async (req, res) => {
     if (batch !== undefined) student.batch = batch;
     await student.save();
   }
-  if (user.role === "teacher") {
+  if (isStaff(user.role)) {
     const teacher = await Teacher.findOne({ user: user._id });
     if (employeeId !== undefined) teacher.employeeId = employeeId;
     if (department !== undefined) teacher.department = department;
