@@ -3,7 +3,7 @@ A college management web app where admins, teachers and students handle daily ac
 
 Built as our OJT project, and meant to actually be used by the college.
 
-## Why
+## Why ? 
 
 Right now this info lives in registers, Excel sheets, WhatsApp groups and notice boards and many apps and websites for daily work . Students miss notices, attendance problems show up too late, and admins spend hours on manual updates.
 
@@ -152,12 +152,10 @@ All routes start with `/api`. Everything except login needs the header `Authoriz
 | POST, PATCH, DELETE | `/timetable/:id` | Admin | Manage slots (clash checked) |
 
 ## Design docs
-
 - [High level design (HLD)](docs/HLD.md): system overview, request flow, deployment
 - [Low level design (LLD)](docs/LLD.md): database schema, modules, clash check logic
 
-## Roadmap
-
+## Roadmap 
 - [x] PRD and planning
 - [x] Login, roles, users, departments, batches
 - [x] Courses and timetable with clash checking
@@ -168,6 +166,6 @@ All routes start with `/api`. Everything except login needs the header `Authoriz
 
 - Archi Tyagi
 
-## License
+## License 
 
 MIT, see [LICENSE](LICENSE).
