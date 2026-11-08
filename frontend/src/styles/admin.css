@@ -1226,3 +1226,23 @@
 .applicant-list li {
   padding: 2px 0;
 }
+
+/* Student home */
+.list-row--link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.list-row--link:hover .list-row__title {
+  color: var(--amber-text);
+}
+
+.date-chip.is-deadline {
+  background: #fef3f2;
+  color: var(--red);
+}
+
+.home-tag {
+  margin-left: 8px;
+  vertical-align: 2px;
+}
