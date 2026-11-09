@@ -416,3 +416,131 @@
   width: 100%;
   line-height: 1.5;
 }
+
+/* Study material */
+.material-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chip span {
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.chip:hover {
+  background: var(--soft);
+}
+
+.chip.is-active {
+  border-color: var(--amber-border);
+  background: var(--amber);
+  color: var(--amber-ink);
+}
+
+.chip.is-active span {
+  color: var(--amber-ink);
+}
+
+.search--light {
+  background: var(--soft);
+}
+
+.material-group {
+  margin-top: 18px;
+}
+
+.material-group__title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 6px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.material-group__title span {
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.material {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.material__icon {
+  display: grid;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 46px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--amber);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.material__body {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.material__title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.material__meta {
+  margin-top: 2px;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.material__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.field--inline select {
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--field-line);
+  border-radius: 10px;
+  background: var(--soft);
+  font-size: 14px;
+}

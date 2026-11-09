@@ -12,6 +12,7 @@ export const navigation = {
           { label: 'Courses', icon: 'book', to: '/admin/courses' },
           { label: 'Timetable', icon: 'calendar', to: '/admin/timetable' },
           { label: 'Impact score reviews', icon: 'star', to: '/admin/activities' },
+          { label: 'Study material', icon: 'file', to: '/admin/materials' },
         ],
       },
       {
@@ -83,6 +84,7 @@ export const navigation = {
           { label: 'Impact score', icon: 'star', to: '/student/impact' },
           { label: 'Timetable', icon: 'calendar', to: '/student/timetable' },
           { label: 'Courses', icon: 'book', to: '/student/courses' },
+          { label: 'Study material', icon: 'file', to: '/student/materials' },
         ],
       },
       {
