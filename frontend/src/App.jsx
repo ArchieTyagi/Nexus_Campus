@@ -12,6 +12,8 @@ import StudentDashboard from './pages/StudentDashboard.jsx'
 import DepartmentsPage from './pages/admin/DepartmentsPage.jsx'
 import ImpactReviewPage from './pages/admin/ImpactReviewPage.jsx'
 import ImpactScorePage from './pages/student/ImpactScorePage.jsx'
+import NoticesPage from './pages/student/NoticesPage.jsx'
+import NoticesAdminPage from './pages/admin/NoticesAdminPage.jsx'
 
 // Which roles can open each dashboard.
 // HOD is not a backend role yet, so admin can open it for now.
@@ -23,6 +25,7 @@ const dashboards = [
     pages: [
       { path: 'departments', element: <DepartmentsPage /> },
       { path: 'activities', element: <ImpactReviewPage /> },
+      { path: 'notices', element: <NoticesAdminPage /> },
     ],
   },
   { path: 'hod', page: <HodDashboard />, allow: ['admin', 'hod'] },
@@ -31,7 +34,10 @@ const dashboards = [
     path: 'student',
     page: <StudentDashboard />,
     allow: ['student'],
-    pages: [{ path: 'impact', element: <ImpactScorePage /> }],
+    pages: [
+      { path: 'impact', element: <ImpactScorePage /> },
+      { path: 'notices', element: <NoticesPage /> },
+    ],
   },
 ]
 
