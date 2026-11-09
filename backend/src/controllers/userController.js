@@ -20,6 +20,33 @@ const checkOneHod = async (department, ignoreUserId) => {
   if (taken) throw new AppError("This department already has an HOD", 409);
 };
 
+// Adds each person's roll number / employee ID, department and batch, for lists
+const withProfiles = async (users) => {
+  const ids = users.map((u) => u._id);
+  const [students, teachers] = await Promise.all([
+    Student.find({ user: { $in: ids } }).populate("department", "name code").populate("batch", "name"),
+    Teacher.find({ user: { $in: ids } }).populate("department", "name code"),
+  ]);
+  const byUser = new Map([...students, ...teachers].map((p) => [String(p.user), p]));
+  return users.map((u) => ({ ...u.toJSON(), profile: byUser.get(String(u._id)) ?? null }));
+};
+
+// GET /api/users/teachers?department=<id>   (admin, hod)
+// Teacher profiles (HODs included) for dropdowns, like picking who teaches a course
+export const listTeachers = async (req, res) => {
+  const filter = {};
+  if (req.query.department) filter.department = req.query.department;
+  if (req.user.role === "hod") filter.department = await hodDepartment(req.user);
+  const teachers = await Teacher.find(filter)
+    .populate({ path: "user", select: "name email role isActive" })
+    .populate("department", "name code");
+  res.json(
+    teachers
+      .filter((t) => t.user?.isActive)
+      .sort((a, b) => a.user.name.localeCompare(b.user.name))
+  );
+};
+
 // GET /api/users?role=student&department=<id>&batch=<id>&search=piyush&page=1
 export const listUsers = async (req, res) => {
   const { role, batch, search, active } = req.query;
@@ -61,7 +88,7 @@ export const listUsers = async (req, res) => {
     User.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit),
     User.countDocuments(filter),
   ]);
-  res.json({ users, total, page, pages: Math.ceil(total / limit) });
+  res.json({ users: await withProfiles(users), total, page, pages: Math.ceil(total / limit) });
 };
 
 // GET /api/users/:id
