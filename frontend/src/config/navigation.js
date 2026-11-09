@@ -11,6 +11,7 @@ export const navigation = {
           { label: 'Departments and batches', icon: 'department', to: '/admin/departments' },
           { label: 'Courses', icon: 'book', to: '/admin/courses' },
           { label: 'Timetable', icon: 'calendar', to: '/admin/timetable' },
+          { label: 'Impact score reviews', icon: 'star', to: '/admin/activities' },
         ],
       },
       {
@@ -79,6 +80,7 @@ export const navigation = {
         items: [
           { label: 'Today', icon: 'sun', to: '/student' },
           { label: 'Attendance', icon: 'checklist', to: '/student/attendance' },
+          { label: 'Impact score', icon: 'star', to: '/student/impact' },
           { label: 'Timetable', icon: 'calendar', to: '/student/timetable' },
           { label: 'Courses', icon: 'book', to: '/student/courses' },
         ],
