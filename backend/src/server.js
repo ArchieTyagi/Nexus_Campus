@@ -8,6 +8,7 @@ import departmentRoutes from "./routes/departmentRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
 import timetableRoutes from "./routes/timetableRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
+import noticeRoutes from "./routes/noticeRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -32,6 +33,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/timetable", timetableRoutes);
 app.use("/api/activities", activityRoutes);
+app.use("/api/notices", noticeRoutes);
 app.use("/api", departmentRoutes);
 
 app.use(notFound);

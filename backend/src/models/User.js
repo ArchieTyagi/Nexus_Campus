@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
     photoUrl: { type: String },
     isActive: { type: Boolean, default: true },
     mustChangePassword: { type: Boolean, default: true },
+    noticesSeenAt: { type: Date }, // notices after this time show as new
   },
   {
     timestamps: true,
