@@ -666,3 +666,18 @@
   width: 100%;
   min-width: 0;
 }
+
+/* Courses */
+.data-table--courses {
+  min-width: 820px;
+}
+
+.data-table--courses .field--inline select {
+  width: 100%;
+}
+
+.row-note {
+  grid-column: 1 / -1;
+  color: var(--red);
+  font-size: 14px;
+}
