@@ -544,3 +544,125 @@
   background: var(--soft);
   font-size: 14px;
 }
+
+/* Users */
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.filter-row .search {
+  flex: 1 1 240px;
+  width: auto;
+  height: 40px;
+}
+
+.data-table--users {
+  min-width: 860px;
+}
+
+.data-table__row.is-inactive {
+  opacity: 0.55;
+}
+
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-cell span,
+.user-cell__muted {
+  color: var(--ink-2);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.role-tag {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--soft-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.role-tag--admin {
+  background: var(--ink);
+  color: #fff;
+}
+
+.role-tag--hod {
+  background: var(--amber);
+  color: var(--amber-ink);
+}
+
+.role-tag--teacher {
+  background: var(--amber-tint);
+  color: var(--amber-tint-text);
+}
+
+.user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.user-actions .btn {
+  height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.user-row__error {
+  grid-column: 1 / -1;
+}
+
+.temp-password {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--amber-border);
+  border-radius: var(--radius-md);
+  background: var(--amber-tint);
+  font-size: 14px;
+}
+
+.temp-password span {
+  flex: 1 1 220px;
+}
+
+.temp-password code {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px 14px;
+}
+
+.form-grid .field input,
+.form-grid .field select {
+  width: 100%;
+  min-width: 0;
+}

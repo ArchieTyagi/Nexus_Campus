@@ -16,6 +16,7 @@ import NoticesPage from './pages/student/NoticesPage.jsx'
 import NoticesAdminPage from './pages/admin/NoticesAdminPage.jsx'
 import MaterialsPage from './pages/student/MaterialsPage.jsx'
 import MaterialsAdminPage from './pages/admin/MaterialsAdminPage.jsx'
+import UsersPage from './pages/admin/UsersPage.jsx'
 
 // Which roles can open each dashboard.
 // HOD is not a backend role yet, so admin can open it for now.
@@ -26,6 +27,7 @@ const dashboards = [
     allow: ['admin'],
     pages: [
       { path: 'departments', element: <DepartmentsPage /> },
+      { path: 'users', element: <UsersPage /> },
       { path: 'activities', element: <ImpactReviewPage /> },
       { path: 'notices', element: <NoticesAdminPage /> },
       { path: 'materials', element: <MaterialsAdminPage /> },
