@@ -32,6 +32,14 @@ export const hodDepartment = async (user) => {
   return t.department;
 };
 
+// Every batch in a teacher's or HOD's department, as a filter
+export const departmentBatches = async (user) => {
+  const t = await Teacher.findOne({ user: user._id });
+  if (!t) throw new AppError("Teacher profile not found", 404);
+  const batches = await Batch.find({ department: t.department }).select("_id");
+  return { batch: { $in: batches.map((b) => b._id) } };
+};
+
 // Lets admin or HOD pick one batch with ?batch=<id>.
 // For an HOD, a batch outside their department gives no results.
 export const pickBatch = (scopeBatch, wanted) => {
