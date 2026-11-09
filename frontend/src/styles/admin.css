@@ -1,0 +1,83 @@
+/* Admin manage pages */
+.empty-note {
+  padding: 14px 0;
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.pick-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pick-list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pick-list__item:hover {
+  background: var(--soft);
+}
+
+.pick-list__item.is-selected {
+  border-color: var(--amber-border);
+  background: var(--amber-tint);
+}
+
+.pick-list__item.is-selected .tag {
+  background: var(--amber);
+  color: var(--amber-ink);
+}
+
+.pick-list__name {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pick-list__count {
+  color: var(--ink-2);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.data-table--compact {
+  min-width: 420px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 12px;
+}
+
+.form-row--four {
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+}
+
+.form-row .field input,
+.form-row .field select {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .form-row,
+  .form-row--four {
+    grid-template-columns: 1fr;
+  }
+}
