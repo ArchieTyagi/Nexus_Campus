@@ -18,6 +18,8 @@ import MaterialsPage from './pages/student/MaterialsPage.jsx'
 import MaterialsAdminPage from './pages/admin/MaterialsAdminPage.jsx'
 import UsersPage from './pages/admin/UsersPage.jsx'
 import CoursesPage from './pages/admin/CoursesPage.jsx'
+import TakeAttendancePage from './pages/teacher/TakeAttendancePage.jsx'
+import AttendancePage from './pages/student/AttendancePage.jsx'
 
 // Which roles can open each dashboard.
 // HOD is not a backend role yet, so admin can open it for now.
@@ -35,8 +37,18 @@ const dashboards = [
       { path: 'materials', element: <MaterialsAdminPage /> },
     ],
   },
-  { path: 'hod', page: <HodDashboard />, allow: ['admin', 'hod'] },
-  { path: 'teacher', page: <TeacherDashboard />, allow: ['teacher'] },
+  {
+    path: 'hod',
+    page: <HodDashboard />,
+    allow: ['admin', 'hod'],
+    pages: [{ path: 'attendance', element: <TakeAttendancePage /> }],
+  },
+  {
+    path: 'teacher',
+    page: <TeacherDashboard />,
+    allow: ['teacher'],
+    pages: [{ path: 'attendance', element: <TakeAttendancePage /> }],
+  },
   {
     path: 'student',
     page: <StudentDashboard />,
@@ -45,6 +57,7 @@ const dashboards = [
       { path: 'impact', element: <ImpactScorePage /> },
       { path: 'notices', element: <NoticesPage /> },
       { path: 'materials', element: <MaterialsPage /> },
+      { path: 'attendance', element: <AttendancePage /> },
     ],
   },
 ]
