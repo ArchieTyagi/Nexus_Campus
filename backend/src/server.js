@@ -11,6 +11,7 @@ import activityRoutes from "./routes/activityRoutes.js";
 import noticeRoutes from "./routes/noticeRoutes.js";
 import materialRoutes from "./routes/materialRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
+import ojtRoutes from "./routes/ojtRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -38,6 +39,7 @@ app.use("/api/activities", activityRoutes);
 app.use("/api/notices", noticeRoutes);
 app.use("/api/materials", materialRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/ojt", ojtRoutes);
 app.use("/api", departmentRoutes);
 
 app.use(notFound);

@@ -63,15 +63,16 @@ const checkAudience = async (data, user) => {
 };
 
 const pick = (body) => {
-  const keys = ["title", "body", "link", "audience", "department", "batch", "important", "pinned"];
+  const keys = ["title", "body", "link", "audience", "department", "batch", "category", "important", "pinned"];
   const data = Object.fromEntries(keys.filter((k) => body[k] !== undefined).map((k) => [k, body[k]]));
   if (data.link === "") data.link = undefined;
   return data;
 };
 
-// GET /api/notices   Pinned first, then newest. Each one says if it is new for you.
+// GET /api/notices?category=ojt   Pinned first, then newest. Each one says if it is new for you.
 export const listNotices = async (req, res) => {
   const filter = await visibleTo(req.user);
+  if (["general", "ojt"].includes(req.query.category)) filter.category = req.query.category;
   const notices = await withDetails(Notice.find(filter).sort({ pinned: -1, createdAt: -1 }).limit(100));
   const seenAt = req.user.noticesSeenAt || new Date(0);
   res.json(

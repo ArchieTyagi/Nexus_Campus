@@ -14,6 +14,7 @@ const noticeSchema = new mongoose.Schema(
     audience: { type: String, enum: ["all", "department", "batch"], default: "all" },
     department: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
     batch: { type: mongoose.Schema.Types.ObjectId, ref: "Batch" },
+    category: { type: String, enum: ["general", "ojt"], default: "general" },
     important: { type: Boolean, default: false },
     pinned: { type: Boolean, default: false },
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
