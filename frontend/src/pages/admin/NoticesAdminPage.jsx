@@ -120,7 +120,7 @@ function NoticeActions({ notice, token, onChanged, onDeleted }) {
 }
 
 function NoticeForm({ token, departments, batches, onPosted }) {
-  const empty = { title: '', body: '', link: '', audience: 'all', department: '', batch: '', important: false, pinned: false }
+  const empty = { title: '', body: '', link: '', audience: 'all', department: '', batch: '', ojt: false, important: false, pinned: false }
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -147,6 +147,7 @@ function NoticeForm({ token, departments, batches, onPosted }) {
         body: form.body.trim(),
         link: form.link.trim() || undefined,
         audience: form.audience,
+        category: form.ojt ? 'ojt' : 'general',
         important: form.important,
         pinned: form.pinned,
       }
@@ -218,6 +219,10 @@ function NoticeForm({ token, departments, batches, onPosted }) {
         <label className="check">
           <input type="checkbox" checked={form.pinned} onChange={set('pinned')} />
           Pin to top
+        </label>
+        <label className="check">
+          <input type="checkbox" checked={form.ojt} onChange={set('ojt')} />
+          OJT announcement
         </label>
       </div>
       <div className="form__actions">

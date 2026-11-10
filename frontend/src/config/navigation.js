@@ -13,6 +13,7 @@ export const navigation = {
           { label: 'Timetable', icon: 'calendar', to: '/admin/timetable' },
           { label: 'Impact score reviews', icon: 'star', to: '/admin/activities' },
           { label: 'Study material', icon: 'file', to: '/admin/materials' },
+          { label: 'OJT', icon: 'briefcase', to: '/admin/ojt' },
         ],
       },
       {
@@ -85,6 +86,7 @@ export const navigation = {
           { label: 'Timetable', icon: 'calendar', to: '/student/timetable' },
           { label: 'Courses', icon: 'book', to: '/student/courses' },
           { label: 'Study material', icon: 'file', to: '/student/materials' },
+          { label: 'OJT', icon: 'briefcase', to: '/student/ojt' },
         ],
       },
       {

@@ -20,6 +20,7 @@ const paths = {
   collapse: 'M4 4h16v16H4zM9 4v16M15 10l-2 2 2 2',
   star: 'M12 4l2.5 5 5.5.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.5-.8z',
   file: 'M7 3h7l5 5v13H7zM14 3v5h5M10 13h6M10 17h6',
+  briefcase: 'M4 8h16v11H4zM9 8V5h6v3M4 13h16',
   logout: 'M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10',
   expand: 'M4 4h16v16H4zM9 4v16M13 10l2 2-2 2',
 }

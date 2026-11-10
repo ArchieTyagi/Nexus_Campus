@@ -20,6 +20,8 @@ import UsersPage from './pages/admin/UsersPage.jsx'
 import CoursesPage from './pages/admin/CoursesPage.jsx'
 import TakeAttendancePage from './pages/teacher/TakeAttendancePage.jsx'
 import AttendancePage from './pages/student/AttendancePage.jsx'
+import OjtPage from './pages/student/OjtPage.jsx'
+import OjtAdminPage from './pages/admin/OjtAdminPage.jsx'
 
 // Which roles can open each dashboard.
 // HOD is not a backend role yet, so admin can open it for now.
@@ -35,6 +37,7 @@ const dashboards = [
       { path: 'activities', element: <ImpactReviewPage /> },
       { path: 'notices', element: <NoticesAdminPage /> },
       { path: 'materials', element: <MaterialsAdminPage /> },
+      { path: 'ojt', element: <OjtAdminPage /> },
     ],
   },
   {
@@ -58,6 +61,7 @@ const dashboards = [
       { path: 'notices', element: <NoticesPage /> },
       { path: 'materials', element: <MaterialsPage /> },
       { path: 'attendance', element: <AttendancePage /> },
+      { path: 'ojt', element: <OjtPage /> },
     ],
   },
 ]

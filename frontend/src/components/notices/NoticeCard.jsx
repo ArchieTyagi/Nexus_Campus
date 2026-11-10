@@ -11,6 +11,7 @@ export default function NoticeCard({ notice, isNew = false, actions = null }) {
           {notice.title}
         </h3>
         <div className="notice__tags">
+          {notice.category === 'ojt' && <span className="notice__tag">OJT</span>}
           {notice.pinned && <span className="notice__tag">Pinned</span>}
           {notice.important && <span className="notice__tag notice__tag--important">Important</span>}
         </div>
