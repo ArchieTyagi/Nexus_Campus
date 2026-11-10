@@ -1106,3 +1106,123 @@
 .form__actions--split .btn {
   margin-left: auto;
 }
+
+/* Sessions */
+.session.is-live .event__date {
+  background: var(--amber);
+  color: var(--amber-ink);
+}
+
+.live-dot {
+  color: var(--amber-text);
+}
+
+/* Internships */
+.internship-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.internship {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.internship:first-child {
+  border-top: 0;
+}
+
+.internship.is-closed {
+  opacity: 0.6;
+}
+
+.internship__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.internship__role {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.internship__company {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.internship__deadline {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--soft-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.internship__deadline.is-soon {
+  background: #fef3f2;
+  color: var(--red);
+}
+
+.internship__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.internship__text {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.internship__details {
+  color: var(--ink-2);
+  white-space: pre-line;
+}
+
+.internship__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.internship__actions:empty {
+  display: none;
+}
+
+.btn.is-done {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.internship__applied {
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--amber-text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.applicant-list {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.applicant-list li {
+  padding: 2px 0;
+}

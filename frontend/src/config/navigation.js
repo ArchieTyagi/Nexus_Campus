@@ -21,6 +21,8 @@ export const navigation = {
         items: [
           { label: 'Attendance reports', icon: 'chart', to: '/admin/reports' },
           { label: 'Notices', icon: 'notice', to: '/admin/notices' },
+          { label: 'Sessions', icon: 'video', to: '/admin/sessions' },
+          { label: 'Internships', icon: 'send', to: '/admin/internships' },
           { label: 'Settings', icon: 'settings', to: '/admin/settings' },
         ],
       },
@@ -93,6 +95,8 @@ export const navigation = {
         label: 'Student life',
         items: [
           { label: 'Notices', icon: 'notice', to: '/student/notices' },
+          { label: 'Sessions', icon: 'video', to: '/student/sessions' },
+          { label: 'Internships', icon: 'send', to: '/student/internships' },
           { label: 'Profile', icon: 'user', to: '/student/profile' },
         ],
       },
