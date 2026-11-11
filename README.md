@@ -13,7 +13,7 @@ Nexus Campus gives every person a login and a dashboard with only what they need
 
 | Module | Status | What it does |
 | --- | --- | --- |
-| Login and roles | Done | Login with email or roll number. Four roles: admin, HOD, teacher, student |
+| Login and roles | Done | Login with email or roll number. Five roles: admin, HOD, batch manager, teacher, student |
 | Users | Done | Admin adds students and teachers, searches and filters, deactivates accounts |
 | Departments and batches | Done | Admin creates departments (CSE, AI/ML) and batches (2025-2029 Sec A) |
 | Courses | Done | Admin creates courses for a batch and assigns a teacher |
@@ -24,16 +24,18 @@ Nexus Campus gives every person a login and a dashboard with only what they need
 
 ### Who can do what
 
-| Action | Admin | HOD | Teacher | Student |
-| --- | --- | --- | --- | --- |
-| Manage users, departments, batches | Yes | No | No | No |
-| Create courses and timetable | Yes | No | No | No |
-| View courses and timetable | All | Own department | Own classes | Own batch |
-| View people list | All | Own department | No | No |
-| View students in a batch | Yes | Yes | Yes | No |
-| Change own password | Yes | Yes | Yes | Yes |
+| Action | Admin | HOD | Batch manager | Teacher | Student |
+| --- | --- | --- | --- | --- | --- |
+| Manage users, departments, batches, courses, timetable | Yes | No | No | No | No |
+| Post notices, material, sessions, internships, OJT dates | Anywhere | Own department | Own batches | No | No |
+| Approve impact score, review OJT updates | All | Own department | Own batches | No | No |
+| Take QR attendance | Any course | Department courses | No | Own courses | Scans the QR |
+| See people | All | Own department | Students of own batches | No | No |
+| Change own password | Yes | Yes | Yes | Yes | Yes |
 
 An HOD is a teacher who also looks after one department, so they keep their teacher profile. Each department can have only one HOD. Admin makes a teacher the HOD by changing their role to `hod`.
+
+A batch manager looks after one or more batches. Admin creates them with role `batch_manager` and the batches they manage. A batch has one manager, so giving a batch to someone new moves it to them.
 
 ## Architecture
 
