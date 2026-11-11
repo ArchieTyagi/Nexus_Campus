@@ -6,8 +6,8 @@ const router = Router();
 router.use(protect);
 
 router.get("/", listSessions);
-router.post("/", allow("admin", "hod"), addSession);
-router.patch("/:id", allow("admin", "hod"), updateSession);
-router.delete("/:id", allow("admin", "hod"), deleteSession);
+router.post("/", allow("admin", "hod", "batch_manager"), addSession);
+router.patch("/:id", allow("admin", "hod", "batch_manager"), updateSession);
+router.delete("/:id", allow("admin", "hod", "batch_manager"), deleteSession);
 
 export default router;

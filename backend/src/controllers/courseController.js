@@ -26,7 +26,7 @@ const checkLinks = async ({ department, batch, teacher }) => {
 // Students only see their batch's courses, teachers only their own, HOD their department's.
 export const listCourses = async (req, res) => {
   const filter = await viewerScope(req.user);
-  if (req.user.role === "admin" || req.user.role === "hod") {
+  if (["admin", "hod", "batch_manager"].includes(req.user.role)) {
     if (req.query.batch) filter.batch = pickBatch(filter.batch, req.query.batch);
     if (req.query.teacher) filter.teacher = req.query.teacher;
     if (req.query.department && req.user.role === "admin") filter.department = req.query.department;

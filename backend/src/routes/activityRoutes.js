@@ -15,10 +15,10 @@ router.patch("/:id", allow("student"), updateActivity);
 router.delete("/:id", allow("student"), deleteActivity);
 
 // Leaderboard for a batch
-router.get("/leaderboard", allow("student", "admin", "hod"), leaderboard);
+router.get("/leaderboard", allow("student", "admin", "hod", "batch_manager"), leaderboard);
 
 // Reviewers approve or reject (batch manager will join later)
-router.get("/", allow("admin", "hod"), listActivities);
-router.patch("/:id/review", allow("admin", "hod"), reviewActivity);
+router.get("/", allow("admin", "hod", "batch_manager"), listActivities);
+router.patch("/:id/review", allow("admin", "hod", "batch_manager"), reviewActivity);
 
 export default router;

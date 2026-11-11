@@ -8,6 +8,7 @@ const batchSchema = new mongoose.Schema(
     startYear: { type: Number, required: true },
     endYear: { type: Number, required: true },
     currentSemester: { type: Number, min: 1, max: 12, default: 1 },
+    manager: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // the batch manager who looks after this batch
   },
   { timestamps: true }
 );

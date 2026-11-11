@@ -29,10 +29,10 @@ const checkBatch = async (batchId, user) => {
   if (!mongoose.isValidObjectId(batchId)) throw new AppError("Pick a batch");
   const b = await Batch.findById(batchId);
   if (!b) throw new AppError("Pick a batch");
-  if (user.role === "hod") {
+  if (user.role === "hod" || user.role === "batch_manager") {
     const scope = await viewerScope(user);
     if (!scope.batch.$in.some((id) => String(id) === String(b._id))) {
-      throw new AppError("You can only add material for your own department", 403);
+      throw new AppError("You can only add material for your own batches", 403);
     }
   }
   return b;

@@ -5,7 +5,7 @@ import AppError from "./AppError.js";
 
 // Works out what the logged-in person is allowed to see.
 // Students: only their own batch. Teachers: only their own classes.
-// HOD: every batch in their department. Admin: anything.
+// HOD: every batch in their department. Batch manager: the batches they manage. Admin: anything.
 export const viewerScope = async (user) => {
   if (user.role === "student") {
     const s = await Student.findOne({ user: user._id });
@@ -22,8 +22,14 @@ export const viewerScope = async (user) => {
     const batches = await Batch.find({ department }).select("_id");
     return { batch: { $in: batches.map((b) => b._id) } };
   }
+  if (user.role === "batch_manager") {
+    return { batch: { $in: await managedBatchIds(user) } };
+  }
   return {};
 };
+
+// The batches a batch manager looks after
+export const managedBatchIds = async (user) => (await Batch.find({ manager: user._id }).select("_id")).map((b) => b._id);
 
 // The department an HOD looks after
 export const hodDepartment = async (user) => {

@@ -7,7 +7,7 @@ const router = Router();
 router.use(protect);
 
 // HOD can list people in their own department. Everything else is admin only.
-router.get("/", allow("admin", "hod"), listUsers);
+router.get("/", allow("admin", "hod", "batch_manager"), listUsers);
 router.get("/teachers", allow("admin", "hod"), listTeachers);
 router.post("/", allow("admin"), createUser);
 router.get("/:id", allow("admin"), getUser);

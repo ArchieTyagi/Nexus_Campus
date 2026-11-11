@@ -11,13 +11,13 @@ router.use(protect);
 // Monthly updates
 router.get("/updates/mine", allow("student"), myUpdates);
 router.put("/updates/mine", allow("student"), saveMyUpdate);
-router.get("/updates", allow("admin", "hod"), listUpdates);
-router.patch("/updates/:id/review", allow("admin", "hod"), reviewUpdate);
+router.get("/updates", allow("admin", "hod", "batch_manager"), listUpdates);
+router.patch("/updates/:id/review", allow("admin", "hod", "batch_manager"), reviewUpdate);
 
 // Viva, meetings and deadlines
 router.get("/events", listEvents);
-router.post("/events", allow("admin", "hod"), addEvent);
-router.patch("/events/:id", allow("admin", "hod"), updateEvent);
-router.delete("/events/:id", allow("admin", "hod"), deleteEvent);
+router.post("/events", allow("admin", "hod", "batch_manager"), addEvent);
+router.patch("/events/:id", allow("admin", "hod", "batch_manager"), updateEvent);
+router.delete("/events/:id", allow("admin", "hod", "batch_manager"), deleteEvent);
 
 export default router;

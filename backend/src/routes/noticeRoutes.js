@@ -13,8 +13,8 @@ router.get("/unread", unreadCount);
 router.post("/seen", markSeen);
 
 // Admin and HOD post (batch manager will join later)
-router.post("/", allow("admin", "hod"), createNotice);
-router.patch("/:id", allow("admin", "hod"), updateNotice);
-router.delete("/:id", allow("admin", "hod"), deleteNotice);
+router.post("/", allow("admin", "hod", "batch_manager"), createNotice);
+router.patch("/:id", allow("admin", "hod", "batch_manager"), updateNotice);
+router.delete("/:id", allow("admin", "hod", "batch_manager"), deleteNotice);
 
 export default router;
