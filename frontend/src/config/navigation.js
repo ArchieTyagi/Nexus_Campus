@@ -58,7 +58,13 @@ export const navigation = {
   batch: {
     label: 'Batch manager',
     groups: [
-      { label: 'My batches', items: [{ label: 'Students', icon: 'users', to: '/batch' }] },
+      {
+        label: 'My batches',
+        items: [
+          { label: 'Dashboard', icon: 'dashboard', to: '/batch' },
+          { label: 'Students', icon: 'users', to: '/batch/students' },
+        ],
+      },
       {
         label: 'Review',
         items: [
