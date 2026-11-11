@@ -2,6 +2,7 @@ import Department from "../models/Department.js";
 import Batch from "../models/Batch.js";
 import Student from "../models/Student.js";
 import AppError from "../utils/AppError.js";
+import { viewerScope, departmentBatches } from "../utils/viewer.js";
 
 // GET /api/departments
 export const listDepartments = async (req, res) => {
@@ -49,7 +50,14 @@ export const updateBatch = async (req, res) => {
 };
 
 // GET /api/batches/:id/students
+// Admin: any batch. HOD and teacher: batches in their department. Batch manager: their own batches.
 export const batchStudents = async (req, res) => {
+  if (req.user.role !== "admin") {
+    const scope = req.user.role === "teacher" ? await departmentBatches(req.user) : await viewerScope(req.user);
+    if (!scope.batch.$in.some((id) => String(id) === String(req.params.id))) {
+      throw new AppError("You can only see students of your own batches", 403);
+    }
+  }
   const students = await Student.find({ batch: req.params.id })
     .populate("user", "name email phone isActive")
     .sort({ rollNumber: 1 });
