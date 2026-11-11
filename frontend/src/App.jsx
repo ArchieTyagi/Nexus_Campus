@@ -26,6 +26,7 @@ import SessionsPage from './pages/student/SessionsPage.jsx'
 import InternshipsPage from './pages/student/InternshipsPage.jsx'
 import SessionsAdminPage from './pages/admin/SessionsAdminPage.jsx'
 import InternshipsAdminPage from './pages/admin/InternshipsAdminPage.jsx'
+import BatchStudentsPage from './pages/batch/BatchStudentsPage.jsx'
 
 // Which roles can open each dashboard.
 // HOD is not a backend role yet, so admin can open it for now.
@@ -51,6 +52,20 @@ const dashboards = [
     page: <HodDashboard />,
     allow: ['admin', 'hod'],
     pages: [{ path: 'attendance', element: <TakeAttendancePage /> }],
+  },
+  // Batch manager: the same review and posting pages as admin, the server limits them to their batches
+  {
+    path: 'batch',
+    page: <BatchStudentsPage />,
+    allow: ['batch_manager'],
+    pages: [
+      { path: 'activities', element: <ImpactReviewPage /> },
+      { path: 'ojt', element: <OjtAdminPage /> },
+      { path: 'notices', element: <NoticesAdminPage /> },
+      { path: 'materials', element: <MaterialsAdminPage /> },
+      { path: 'sessions', element: <SessionsAdminPage /> },
+      { path: 'internships', element: <InternshipsAdminPage /> },
+    ],
   },
   {
     path: 'teacher',

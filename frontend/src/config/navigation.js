@@ -55,6 +55,28 @@ export const navigation = {
       },
     ],
   },
+  batch: {
+    label: 'Batch manager',
+    groups: [
+      { label: 'My batches', items: [{ label: 'Students', icon: 'users', to: '/batch' }] },
+      {
+        label: 'Review',
+        items: [
+          { label: 'Impact score', icon: 'star', to: '/batch/activities' },
+          { label: 'OJT', icon: 'briefcase', to: '/batch/ojt' },
+        ],
+      },
+      {
+        label: 'Share',
+        items: [
+          { label: 'Notices', icon: 'notice', to: '/batch/notices' },
+          { label: 'Study material', icon: 'file', to: '/batch/materials' },
+          { label: 'Sessions', icon: 'video', to: '/batch/sessions' },
+          { label: 'Internships', icon: 'send', to: '/batch/internships' },
+        ],
+      },
+    ],
+  },
   teacher: {
     label: 'Teacher',
     groups: [
