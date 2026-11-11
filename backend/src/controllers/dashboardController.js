@@ -11,6 +11,9 @@ import OjtUpdate from "../models/OjtUpdate.js";
 import Internship from "../models/Internship.js";
 import AppError from "../utils/AppError.js";
 import { visibleTo } from "../utils/audience.js";
+import { viewerScope } from "../utils/viewer.js";
+import mongoose from "mongoose";
+import Batch from "../models/Batch.js";
 import { thisMonth } from "./ojtController.js";
 
 const RECENT = 12; // how many recent classes to show per subject
@@ -114,5 +117,110 @@ export const studentDashboard = async (req, res) => {
     unreadNotices: unread,
     ojtUpdate: ojtUpdate?.status ?? "not_sent",
     comingUp,
+  });
+};
+
+const MIN = 0.75;
+const pct = (a, h) => (h ? Math.round((a / h) * 100) : null);
+
+// GET /api/dashboard/batch?batch=<id>   (batch manager, hod, admin)
+// One batch at a glance: who is below 75%, what is waiting for review, OJT updates, impact scores.
+// Without ?batch it uses the first batch the person can see.
+export const batchDashboard = async (req, res) => {
+  const scope = await viewerScope(req.user);
+  const allowed = scope.batch ? scope.batch.$in.map(String) : null; // null = admin, any batch
+  let batchId = req.query.batch;
+  if (batchId && !mongoose.isValidObjectId(batchId)) throw new AppError("Invalid batch");
+  if (!batchId) {
+    const first = await Batch.findOne(allowed ? { _id: { $in: allowed } } : {}).sort({ name: 1 });
+    if (!first) return res.json({ batch: null });
+    batchId = String(first._id);
+  }
+  if (allowed && !allowed.includes(String(batchId))) throw new AppError("This is not one of your batches", 403);
+
+  const batch = await Batch.findById(batchId).populate("department", "name code");
+  if (!batch) throw new AppError("Batch not found", 404);
+  const month = thisMonth();
+
+  const [students, courses, sessions, activities, ojtUpdates, upcoming] = await Promise.all([
+    Student.find({ batch: batch._id }).populate("user", "name isActive").sort({ rollNumber: 1 }),
+    Course.find({ batch: batch._id }).populate({ path: "teacher", select: "user", populate: { path: "user", select: "name" } }).sort({ code: 1 }),
+    AttendanceSession.find({ batch: batch._id }).select("course"),
+    Activity.find({ batch: batch._id }).select("student status approvedPoints"),
+    OjtUpdate.find({ batch: batch._id, month }).select("student status"),
+    OjtEvent.find({ batch: batch._id, startsAt: { $gte: new Date(Date.now() - 12 * 3600000) } }).sort({ startsAt: 1 }).limit(3),
+  ]);
+  const records = await Attendance.find({ session: { $in: sessions.map((x) => x._id) } }).select("student course");
+
+  // How many classes each course has held, and how many each student attended per course
+  const heldBy = new Map();
+  for (const x of sessions) heldBy.set(String(x.course), (heldBy.get(String(x.course)) || 0) + 1);
+  const attended = new Map(); // "student:course" -> count
+  for (const r of records) {
+    const key = `${r.student}:${r.course}`;
+    attended.set(key, (attended.get(key) || 0) + 1);
+  }
+
+  const points = new Map();
+  for (const a of activities) points.set(String(a.student), (points.get(String(a.student)) || 0) + a.approvedPoints);
+  const ojtBy = new Map(ojtUpdates.map((u) => [String(u.student), u.status]));
+
+  const active = students.filter((st) => st.user?.isActive !== false);
+  const rows = active.map((st) => {
+    let a = 0;
+    let h = 0;
+    const low = [];
+    for (const c of courses) {
+      const held = heldBy.get(String(c._id)) || 0;
+      const got = attended.get(`${st._id}:${c._id}`) || 0;
+      a += got;
+      h += held;
+      if (held && got / held < MIN) low.push(c.code);
+    }
+    return {
+      _id: st._id,
+      name: st.user?.name,
+      rollNumber: st.rollNumber,
+      attendance: pct(a, h),
+      lowSubjects: low,
+      impact: points.get(String(st._id)) || 0,
+      ojt: ojtBy.get(String(st._id)) ?? "not_sent",
+    };
+  });
+  // Worst attendance first, students with no classes yet at the end
+  rows.sort((x, y) => (x.attendance ?? 101) - (y.attendance ?? 101) || x.rollNumber.localeCompare(y.rollNumber));
+
+  const subjects = courses.map((c) => {
+    const held = heldBy.get(String(c._id)) || 0;
+    const total = active.reduce((sum, st) => sum + (attended.get(`${st._id}:${c._id}`) || 0), 0);
+    return {
+      code: c.code,
+      name: c.name,
+      teacher: c.teacher?.user?.name ?? null,
+      held,
+      average: held && active.length ? Math.round((total / (held * active.length)) * 100) : null,
+    };
+  });
+
+  const top = [...rows]
+    .filter((r) => r.impact > 0)
+    .sort((x, y) => y.impact - x.impact)
+    .slice(0, 5)
+    .map((r) => ({ name: r.name, rollNumber: r.rollNumber, impact: r.impact, rank: rows.filter((o) => o.impact > r.impact).length + 1 }));
+
+  res.json({
+    batch: { _id: batch._id, name: batch.name, department: batch.department, semester: batch.currentSemester },
+    month,
+    counts: {
+      students: active.length,
+      belowMinimum: rows.filter((r) => r.lowSubjects.length > 0).length,
+      activitiesToReview: activities.filter((a) => a.status === "pending").length,
+      ojtToReview: ojtUpdates.filter((u) => u.status === "submitted").length,
+      ojtNotSent: rows.filter((r) => r.ojt === "not_sent").length,
+    },
+    students: rows,
+    subjects,
+    top,
+    upcoming: upcoming.map((e) => ({ _id: e._id, type: e.type, title: e.title, startsAt: e.startsAt, place: e.place })),
   });
 };
