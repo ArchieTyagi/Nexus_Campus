@@ -5,7 +5,13 @@ import Icon from '../../components/ui/Icon.jsx'
 import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 
-const ROLE_LABELS = { admin: 'Admin', hod: 'HOD', teacher: 'Teacher', student: 'Student' }
+const ROLE_LABELS = {
+  admin: 'Admin',
+  hod: 'HOD',
+  batch_manager: 'Batch manager',
+  teacher: 'Teacher',
+  student: 'Student',
+}
 const userColumns = { gridTemplateColumns: 'minmax(220px, 2fr) 0.8fr 1.4fr 0.9fr minmax(250px, 1.6fr)' }
 
 export default function UsersPage() {
@@ -170,6 +176,11 @@ export default function UsersPage() {
 function profileLine(person) {
   const p = person.profile
   if (!p) return '—'
+  if (person.role === 'batch_manager') {
+    return p.batches?.length
+      ? `Manages ${p.batches.map((b) => `${b.department?.code ?? ''} ${b.name}`.trim()).join(', ')}`
+      : 'No batches yet'
+  }
   if (person.role === 'student') return `${p.department?.code ?? ''} ${p.batch?.name ?? ''} · ${p.rollNumber}`
   return `${p.department?.code ?? ''} · ${p.employeeId}`
 }
@@ -291,6 +302,7 @@ function AddUserForm({ token, departments, batches, onAdded }) {
     employeeId: '',
     department: '',
     batch: '',
+    manages: [],
   }
   const [form, setForm] = useState(empty)
   const [created, setCreated] = useState(null)
@@ -304,12 +316,16 @@ function AddUserForm({ token, departments, batches, onAdded }) {
 
   const isStudent = form.role === 'student'
   const isStaff = form.role === 'teacher' || form.role === 'hod'
+  const isManager = form.role === 'batch_manager'
+  const toggleManaged = (id) =>
+    setForm((f) => ({ ...f, manages: f.manages.includes(id) ? f.manages.filter((x) => x !== id) : [...f.manages, id] }))
   const deptBatches = batches.filter((b) => (b.department?._id ?? b.department) === form.department)
   const ready =
     form.name.trim() &&
     form.email.trim() &&
     (!isStudent || (form.rollNumber.trim() && form.department && form.batch)) &&
-    (!isStaff || (form.employeeId.trim() && form.department))
+    (!isStaff || (form.employeeId.trim() && form.department)) &&
+    (!isManager || form.manages.length > 0)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -321,6 +337,7 @@ function AddUserForm({ token, departments, batches, onAdded }) {
       if (isStudent)
         Object.assign(body, { rollNumber: form.rollNumber.trim(), department: form.department, batch: form.batch })
       if (isStaff) Object.assign(body, { employeeId: form.employeeId.trim(), department: form.department })
+      if (isManager) body.batches = form.manages
       const data = await api('/users', { method: 'POST', token, body })
       setCreated({ name: data.user.name, password: data.tempPassword })
       // Keep role, department and batch so adding a whole class is quick
@@ -403,6 +420,19 @@ function AddUserForm({ token, departments, batches, onAdded }) {
           </label>
         )}
       </div>
+      {isManager && (
+        <fieldset className="batch-picker">
+          <legend>Batches they manage</legend>
+          {batches.length === 0 && <p className="empty-note">Add a batch first in Departments and batches.</p>}
+          {batches.map((b) => (
+            <label key={b._id} className="check">
+              <input type="checkbox" checked={form.manages.includes(b._id)} onChange={() => toggleManaged(b._id)} />
+              {`${b.department?.code ?? ''} ${b.name}`.trim()}
+              {b.manager && <span className="batch-picker__note">(has a manager, will move to this person)</span>}
+            </label>
+          ))}
+        </fieldset>
+      )}
       <div className="form__actions">
         <button type="submit" className="btn btn--primary" disabled={saving || !ready}>
           {saving ? 'Adding...' : `Add ${ROLE_LABELS[form.role].toLowerCase()}`}

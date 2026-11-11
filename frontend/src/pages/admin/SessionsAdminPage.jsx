@@ -7,10 +7,11 @@ import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 import DeleteButton from '../../components/ui/DeleteButton.jsx'
 import { audienceBody, audienceReady } from '../../utils/audience.js'
+import { onlyMine, isBatchManager, canEdit } from '../../utils/batches.js'
 import { SESSION_KINDS } from '../../utils/opportunities.js'
 
 export default function SessionsAdminPage() {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const [sessions, setSessions] = useState(null)
   const [departments, setDepartments] = useState([])
   const [batches, setBatches] = useState([])
@@ -21,10 +22,10 @@ export default function SessionsAdminPage() {
       .then(([list, depts, allBatches]) => {
         setSessions(list)
         setDepartments(depts)
-        setBatches(allBatches)
+        setBatches(onlyMine(allBatches, user))
       })
       .catch((err) => setError(err.message))
-  }, [token])
+  }, [token, user])
 
   return (
     <>
@@ -50,11 +51,13 @@ export default function SessionsAdminPage() {
                 key={s._id}
                 session={s}
                 actions={
-                  <DeleteButton
-                    path={`/sessions/${s._id}`}
-                    token={token}
-                    onDeleted={() => setSessions((list) => list.filter((x) => x._id !== s._id))}
-                  />
+                  canEdit(s, user) && (
+                    <DeleteButton
+                      path={`/sessions/${s._id}`}
+                      token={token}
+                      onDeleted={() => setSessions((list) => list.filter((x) => x._id !== s._id))}
+                    />
+                  )
                 }
               />
             ))}
@@ -64,6 +67,7 @@ export default function SessionsAdminPage() {
           <Panel title="Post a session">
             <SessionForm
               token={token}
+              batchOnly={isBatchManager(user)}
               departments={departments}
               batches={batches}
               onAdded={(s) =>
@@ -77,7 +81,7 @@ export default function SessionsAdminPage() {
   )
 }
 
-function SessionForm({ token, departments, batches, onAdded }) {
+function SessionForm({ token, departments, batches, batchOnly, onAdded }) {
   const empty = {
     title: '',
     kind: 'open_source',
@@ -87,7 +91,7 @@ function SessionForm({ token, departments, batches, onAdded }) {
     place: '',
     link: '',
     details: '',
-    audience: 'all',
+    audience: batchOnly ? 'batch' : 'all',
     department: '',
     batch: '',
   }
@@ -187,7 +191,7 @@ function SessionForm({ token, departments, batches, onAdded }) {
         Details (optional)
         <textarea value={form.details} onChange={set('details')} rows={3} maxLength={2000} />
       </label>
-      <AudienceFields form={form} set={set} departments={departments} batches={batches} />
+      <AudienceFields form={form} set={set} departments={departments} batches={batches} batchOnly={batchOnly} />
       <div className="form__actions">
         <button type="submit" className="btn btn--primary" disabled={saving || !ready}>
           {saving ? 'Posting...' : 'Post session'}

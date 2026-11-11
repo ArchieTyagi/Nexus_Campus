@@ -5,11 +5,12 @@ import MaterialRow from '../../components/materials/MaterialRow.jsx'
 import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 import { groupBySubject } from '../../utils/materials.js'
+import { onlyMine, canEdit } from '../../utils/batches.js'
 
 const batchLabel = (b) => `${b.department?.code ?? ''} ${b.name}`.trim()
 
 export default function MaterialsAdminPage() {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const [batches, setBatches] = useState([])
   const [items, setItems] = useState(null)
   const [batchId, setBatchId] = useState('')
@@ -18,11 +19,11 @@ export default function MaterialsAdminPage() {
   useEffect(() => {
     Promise.all([api('/batches', { token }), api('/materials', { token })])
       .then(([allBatches, list]) => {
-        setBatches(allBatches)
+        setBatches(onlyMine(allBatches, user))
         setItems(list)
       })
       .catch((err) => setError(err.message))
-  }, [token])
+  }, [token, user])
 
   const batch = batches.find((b) => b._id === batchId) ?? batches[0]
   const forBatch = (items ?? []).filter((m) => (m.batch?._id ?? m.batch) === batch?._id)
@@ -79,11 +80,13 @@ export default function MaterialsAdminPage() {
                       key={item._id}
                       item={item}
                       actions={
-                        <DeleteButton
-                          id={item._id}
-                          token={token}
-                          onDeleted={() => setItems((all) => all.filter((m) => m._id !== item._id))}
-                        />
+                        canEdit(item, user) && (
+                          <DeleteButton
+                            id={item._id}
+                            token={token}
+                            onDeleted={() => setItems((all) => all.filter((m) => m._id !== item._id))}
+                          />
+                        )
                       }
                     />
                   ))}

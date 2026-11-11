@@ -1,7 +1,24 @@
 // "Who is it for?" fields, shared by the posting forms.
 // form needs audience, department and batch. set(key) returns an onChange handler.
-export default function AudienceFields({ form, set, departments, batches }) {
+// batchOnly: batch managers can only post to one of their batches, so only the batch picker shows.
+export default function AudienceFields({ form, set, departments, batches, batchOnly = false }) {
   const batchLabel = (b) => `${b.department?.code ?? ''} ${b.name}`.trim()
+  const batchPicker = (
+    <label className="field">
+      Batch
+      <select value={form.batch} onChange={set('batch')} required>
+        <option value="">Pick a batch</option>
+        {batches.map((b) => (
+          <option key={b._id} value={b._id}>
+            {batchLabel(b)}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+
+  if (batchOnly) return batchPicker
+
   return (
     <>
       <label className="field">
@@ -25,19 +42,7 @@ export default function AudienceFields({ form, set, departments, batches }) {
           </select>
         </label>
       )}
-      {form.audience === 'batch' && (
-        <label className="field">
-          Batch
-          <select value={form.batch} onChange={set('batch')} required>
-            <option value="">Pick a batch</option>
-            {batches.map((b) => (
-              <option key={b._id} value={b._id}>
-                {batchLabel(b)}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
+      {form.audience === 'batch' && batchPicker}
     </>
   )
 }

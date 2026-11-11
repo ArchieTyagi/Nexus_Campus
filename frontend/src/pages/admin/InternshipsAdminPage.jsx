@@ -7,10 +7,11 @@ import DeleteButton from '../../components/ui/DeleteButton.jsx'
 import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 import { audienceBody, audienceReady } from '../../utils/audience.js'
+import { onlyMine, isBatchManager, canEdit } from '../../utils/batches.js'
 import { MODES } from '../../utils/opportunities.js'
 
 export default function InternshipsAdminPage() {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const [list, setList] = useState(null)
   const [departments, setDepartments] = useState([])
   const [batches, setBatches] = useState([])
@@ -21,10 +22,10 @@ export default function InternshipsAdminPage() {
       .then(([all, depts, allBatches]) => {
         setList(all)
         setDepartments(depts)
-        setBatches(allBatches)
+        setBatches(onlyMine(allBatches, user))
       })
       .catch((err) => setError(err.message))
-  }, [token])
+  }, [token, user])
 
   const open = (list ?? []).filter((i) => i.isOpen)
   const closed = (list ?? []).filter((i) => !i.isOpen).reverse()
@@ -39,7 +40,9 @@ export default function InternshipsAdminPage() {
           <a className="btn btn--outline" href={i.applyLink} target="_blank" rel="noreferrer">
             Open form
           </a>
-          <DeleteButton path={`/internships/${i._id}`} token={token} onDeleted={() => remove(i._id)} />
+          {canEdit(i, user) && (
+            <DeleteButton path={`/internships/${i._id}`} token={token} onDeleted={() => remove(i._id)} />
+          )}
         </>
       }
       footer={<Applicants internship={i} token={token} />}
@@ -85,6 +88,7 @@ export default function InternshipsAdminPage() {
           <Panel title="Post an internship">
             <InternshipForm
               token={token}
+              batchOnly={isBatchManager(user)}
               departments={departments}
               batches={batches}
               onAdded={(i) => setList((all) => [...all, i].sort((a, b) => new Date(a.deadline) - new Date(b.deadline)))}
@@ -128,7 +132,7 @@ function Applicants({ internship, token }) {
   )
 }
 
-function InternshipForm({ token, departments, batches, onAdded }) {
+function InternshipForm({ token, departments, batches, batchOnly, onAdded }) {
   const empty = {
     role: '',
     company: '',
@@ -140,7 +144,7 @@ function InternshipForm({ token, departments, batches, onAdded }) {
     details: '',
     applyLink: '',
     deadline: '',
-    audience: 'all',
+    audience: batchOnly ? 'batch' : 'all',
     department: '',
     batch: '',
   }
@@ -251,7 +255,7 @@ function InternshipForm({ token, departments, batches, onAdded }) {
         Details (optional)
         <textarea value={form.details} onChange={set('details')} rows={4} maxLength={3000} />
       </label>
-      <AudienceFields form={form} set={set} departments={departments} batches={batches} />
+      <AudienceFields form={form} set={set} departments={departments} batches={batches} batchOnly={batchOnly} />
       <div className="form__actions">
         <button type="submit" className="btn btn--primary" disabled={saving || !ready}>
           {saving ? 'Posting...' : 'Post internship'}

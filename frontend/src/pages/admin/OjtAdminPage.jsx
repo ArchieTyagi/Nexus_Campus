@@ -5,12 +5,13 @@ import EventRow from '../../components/ojt/EventRow.jsx'
 import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
 import { UPDATE_STATUS, monthLabel } from '../../utils/ojt.js'
+import { onlyMine, canEdit } from '../../utils/batches.js'
 
 const batchLabel = (b) => `${b.department?.code ?? ''} ${b.name}`.trim()
 const thisMonth = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }).slice(0, 7)
 
 export default function OjtAdminPage() {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const [batches, setBatches] = useState([])
   const [batchId, setBatchId] = useState('')
   const [events, setEvents] = useState(null)
@@ -21,9 +22,9 @@ export default function OjtAdminPage() {
 
   useEffect(() => {
     api('/batches', { token })
-      .then(setBatches)
+      .then((all) => setBatches(onlyMine(all, user)))
       .catch((err) => setError(err.message))
-  }, [token])
+  }, [token, user])
 
   const batch = batches.find((b) => b._id === batchId) ?? batches[0]
 
@@ -143,11 +144,13 @@ export default function OjtAdminPage() {
                   key={e._id}
                   event={e}
                   actions={
-                    <DeleteEvent
-                      id={e._id}
-                      token={token}
-                      onDeleted={() => setEvents((list) => list.filter((x) => x._id !== e._id))}
-                    />
+                    canEdit(e, user) && (
+                      <DeleteEvent
+                        id={e._id}
+                        token={token}
+                        onDeleted={() => setEvents((list) => list.filter((x) => x._id !== e._id))}
+                      />
+                    )
                   }
                 />
               ))}

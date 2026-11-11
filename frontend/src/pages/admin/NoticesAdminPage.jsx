@@ -4,9 +4,12 @@ import Panel from '../../components/ui/Panel.jsx'
 import NoticeCard from '../../components/notices/NoticeCard.jsx'
 import { useAuth } from '../../context/useAuth.js'
 import { api } from '../../services/api.js'
+import AudienceFields from '../../components/forms/AudienceFields.jsx'
+import { audienceBody, audienceReady } from '../../utils/audience.js'
+import { onlyMine, isBatchManager, canEdit } from '../../utils/batches.js'
 
 export default function NoticesAdminPage() {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const [notices, setNotices] = useState(null)
   const [departments, setDepartments] = useState([])
   const [batches, setBatches] = useState([])
@@ -17,10 +20,10 @@ export default function NoticesAdminPage() {
       .then(([list, depts, allBatches]) => {
         setNotices(list)
         setDepartments(depts)
-        setBatches(allBatches)
+        setBatches(onlyMine(allBatches, user))
       })
       .catch((err) => setError(err.message))
-  }, [token])
+  }, [token, user])
 
   const sortNotices = (list) =>
     [...list].sort((a, b) => Number(b.pinned) - Number(a.pinned) || new Date(b.createdAt) - new Date(a.createdAt))
@@ -56,7 +59,11 @@ export default function NoticesAdminPage() {
                 <NoticeCard
                   key={notice._id}
                   notice={notice}
-                  actions={<NoticeActions notice={notice} token={token} onChanged={replaced} onDeleted={removed} />}
+                  actions={
+                    canEdit(notice, user) && (
+                      <NoticeActions notice={notice} token={token} onChanged={replaced} onDeleted={removed} />
+                    )
+                  }
                 />
               ))}
             </div>
@@ -65,7 +72,13 @@ export default function NoticesAdminPage() {
 
         <div className="column">
           <Panel title="Post a notice">
-            <NoticeForm token={token} departments={departments} batches={batches} onPosted={added} />
+            <NoticeForm
+              token={token}
+              departments={departments}
+              batches={batches}
+              batchOnly={isBatchManager(user)}
+              onPosted={added}
+            />
           </Panel>
         </div>
       </div>
@@ -119,8 +132,18 @@ function NoticeActions({ notice, token, onChanged, onDeleted }) {
   )
 }
 
-function NoticeForm({ token, departments, batches, onPosted }) {
-  const empty = { title: '', body: '', link: '', audience: 'all', department: '', batch: '', ojt: false, important: false, pinned: false }
+function NoticeForm({ token, departments, batches, batchOnly, onPosted }) {
+  const empty = {
+    title: '',
+    body: '',
+    link: '',
+    audience: batchOnly ? 'batch' : 'all',
+    department: '',
+    batch: '',
+    ojt: false,
+    important: false,
+    pinned: false,
+  }
   const [form, setForm] = useState(empty)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
@@ -130,12 +153,7 @@ function NoticeForm({ token, departments, batches, onPosted }) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
-  const batchLabel = (b) => `${b.department?.code ?? ''} ${b.name}`.trim()
-  const ready =
-    form.title.trim() &&
-    form.body.trim() &&
-    (form.audience !== 'department' || form.department) &&
-    (form.audience !== 'batch' || form.batch)
+  const ready = form.title.trim() && form.body.trim() && audienceReady(form)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -146,13 +164,11 @@ function NoticeForm({ token, departments, batches, onPosted }) {
         title: form.title.trim(),
         body: form.body.trim(),
         link: form.link.trim() || undefined,
-        audience: form.audience,
+        ...audienceBody(form),
         category: form.ojt ? 'ojt' : 'general',
         important: form.important,
         pinned: form.pinned,
       }
-      if (form.audience === 'department') body.department = form.department
-      if (form.audience === 'batch') body.batch = form.batch
       onPosted(await api('/notices', { method: 'POST', token, body }))
       setForm(empty)
     } catch (err) {
@@ -164,7 +180,11 @@ function NoticeForm({ token, departments, batches, onPosted }) {
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      {error && <p className="login__error" role="alert">{error}</p>}
+      {error && (
+        <p className="login__error" role="alert">
+          {error}
+        </p>
+      )}
       <label className="field">
         Title
         <input value={form.title} onChange={set('title')} placeholder="OJT viva schedule" maxLength={150} required />
@@ -177,40 +197,7 @@ function NoticeForm({ token, departments, batches, onPosted }) {
         Link (optional)
         <input type="url" value={form.link} onChange={set('link')} placeholder="https://..." />
       </label>
-      <label className="field">
-        Who is it for?
-        <select value={form.audience} onChange={set('audience')}>
-          <option value="all">Whole college</option>
-          <option value="department">One department</option>
-          <option value="batch">One batch</option>
-        </select>
-      </label>
-      {form.audience === 'department' && (
-        <label className="field">
-          Department
-          <select value={form.department} onChange={set('department')} required>
-            <option value="">Pick a department</option>
-            {departments.map((d) => (
-              <option key={d._id} value={d._id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
-      {form.audience === 'batch' && (
-        <label className="field">
-          Batch
-          <select value={form.batch} onChange={set('batch')} required>
-            <option value="">Pick a batch</option>
-            {batches.map((b) => (
-              <option key={b._id} value={b._id}>
-                {batchLabel(b)}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
+      <AudienceFields form={form} set={set} departments={departments} batches={batches} batchOnly={batchOnly} />
       <div className="check-row">
         <label className="check">
           <input type="checkbox" checked={form.important} onChange={set('important')} />

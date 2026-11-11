@@ -1246,3 +1246,32 @@
   margin-left: 8px;
   vertical-align: 2px;
 }
+
+/* Batch manager */
+.role-tag--batch_manager {
+  border: 1px solid var(--amber-border);
+  background: var(--surface);
+  color: var(--amber-text);
+}
+
+.batch-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.batch-picker legend {
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.batch-picker__note {
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 400;
+}
