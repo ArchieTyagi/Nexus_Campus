@@ -42,15 +42,8 @@ app.use(cors({ origin: allowedSites }));
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (req, res) => {
-  // ip = the address the server sees for you. Used once after going online to set TRUST_PROXY correctly.
-  res.json({
-    status: "ok",
-    message: "Nexus Campus backend is running",
-    ip: req.ip,
-    // Temporary, to set TRUST_PROXY: the setting the server read, and the address chain the hosting site sent
-    trustProxy: proxyHops,
-    forwardedFor: req.headers["x-forwarded-for"] ?? null,
-  });
+  // ip = the address the server sees for you. If it ever stops matching your real IP, TRUST_PROXY needs checking.
+  res.json({ status: "ok", message: "Nexus Campus backend is running", ip: req.ip });
 });
 
 app.use("/api/auth", authRoutes);
