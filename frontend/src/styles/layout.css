@@ -1,16 +1,17 @@
 /* App shell: a slim top bar with the menu button, and the page under it */
+/* The working area is one sheet of paper: sections sit on it, divided by lines, not boxed */
 .app-shell {
   min-height: 100vh;
-  background: var(--canvas);
+  background: var(--surface);
 }
 
 .main {
   min-width: 0;
-  padding: 24px 36px 56px;
+  padding: 28px 40px 64px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 
 /* Keep lines readable on wide screens */
@@ -148,12 +149,11 @@
   gap: 10px;
 }
 
+/* Key numbers under a rule, like the facts line of a report. The next section's rule closes them off. */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  border-top: 1px solid var(--line);
 }
 
 .stat {
@@ -165,6 +165,7 @@
 }
 
 .stat:first-child {
+  padding-left: 0;
   border-left: 0;
 }
 
@@ -200,12 +201,11 @@
 }
 
 /* Panels */
+/* A section: a heading with a rule above it. No box around it. */
 .panel {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 20px 24px 22px;
   min-width: 0;
+  padding: 22px 0 14px;
+  border-top: 1px solid var(--line);
 }
 
 .panel__head {
@@ -339,8 +339,8 @@
 /* Phones: the sidebar becomes a scrolling menu bar and panels get tighter */
 @media (max-width: 760px) {
   .main {
-    padding: 16px 14px 36px;
-    gap: 12px;
+    padding: 18px 16px 40px;
+    gap: 8px;
   }
 
   .topbar {
@@ -367,9 +367,13 @@
 
   .stat,
   .stat:first-child {
-    padding: 12px 14px 14px;
+    padding: 12px 12px 14px 0;
     border-left: 0;
     border-top: 1px solid var(--hairline);
+  }
+
+  .stat:nth-child(even) {
+    padding-left: 14px;
   }
 
   .stat:nth-child(even) {
@@ -385,7 +389,7 @@
   }
 
   .panel {
-    padding: 18px 16px 20px;
+    padding: 18px 0 10px;
   }
 }
 
